@@ -15,7 +15,7 @@ python3 -m http.server 4173 --directory site
 ## Analytics boundary
 
 - 公式HP専用のGA4プロパティとウェブデータストリームを使います。
-- 実測定IDを取得するまでは `assets/js/analytics-config.js` にIDを置きません。
+- 実測定IDは `assets/js/analytics-config.js` の1箇所だけに置きます。
 - 仮の測定IDやAPI secretをソースへ入れません。
 - 本番の `naturewxlab.com` かつ利用者が同意した場合だけGoogleタグを読み込みます。
 - 広告関連の保存・シグナル・パーソナライズは常に無効です。
@@ -27,8 +27,10 @@ python3 -m http.server 4173 --directory site
 
 リポジトリ直下で次を実行します。
 
+GA4管理画面で確認した公式HP専用の測定IDを、検査時だけ環境変数へ渡します。
+
 ```bash
-PYTHONDONTWRITEBYTECODE=1 python3 scripts/verify_site.py
+NATUREWXLAB_GA4_ID='専用測定ID' PYTHONDONTWRITEBYTECODE=1 python3 scripts/verify_site.py
 ```
 
 検査は `site/` のHTML・リンク・GA4安全条件・セキュリティヘッダーに加え、リポジトリ全体のローカル絶対パスと生成バイトコードを確認します。
@@ -41,4 +43,4 @@ PYTHONDONTWRITEBYTECODE=1 python3 scripts/verify_site.py
 - 公開前に現行ファイル、Git全履歴、Git identity、Actions log・artifact、Pages配信物をそれぞれ確認します。
 - HSTSはapex・www・SSL・転送の確認後に別途判断します。
 - Cloudflare Pagesのプロジェクト名は `naturewxlab-site` とし、`pages.dev` の本番・preview URLにはホスト限定の `X-Robots-Tag: noindex` を設定します。独自ドメインを一律noindexにはしません。
-- 公開直前に、トップのお知らせを実際の公開日・公開文へ、ポリシー内のCloudflare表現を現在形へ更新します。
+- トップのお知らせは実際の公開日・公開文、ポリシー内のCloudflare表現は現在形へ更新済みです。
