@@ -1,0 +1,24 @@
+{
+  "name": "NatureWxLab",
+  "short_name": "NatureWxLab",
+  "description": "天気や気候のデータを、園芸・メダカ・自然観察・暮らしの判断につなぐ公式サイトです。",
+  "lang": "ja",
+  "start_url": "/",
+  "display": "browser",
+  "background_color": "#f3f8f5",
+  "theme_color": "#24725d",
+  "icons": [
+    {
+      "src": "/assets/icons/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "/assets/icons/apple-touch-icon.png",
+      "sizes": "180x180",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ]
+}
