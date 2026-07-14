@@ -355,6 +355,15 @@ main {
   letter-spacing: -0.025em;
 }
 
+.heading-line {
+  display: block;
+}
+
+.home-section-title {
+  font-size: clamp(1.55rem, 3.6vw, 2.55rem);
+  text-wrap: balance;
+}
+
 .section-heading p,
 .content-block > p {
   margin: 0;
@@ -622,6 +631,22 @@ main {
   font-size: clamp(2.2rem, 5vw, 3.7rem);
 }
 
+.about-hero h1 {
+  max-width: 920px;
+  font-size: clamp(1.7rem, 4.6vw, 3.3rem);
+  text-wrap: balance;
+}
+
+.page-intro {
+  display: grid;
+  max-width: 820px;
+  gap: 12px;
+}
+
+.page-intro p {
+  margin: 0;
+}
+
 .breadcrumb {
   display: flex;
   margin: 0 0 18px;
@@ -672,6 +697,53 @@ main {
 .content-block ol {
   margin: 18px 0 0;
   padding-left: 1.4em;
+}
+
+.section.about-section {
+  padding-block: 68px;
+}
+
+.about-heading,
+.about-prose {
+  max-width: 820px;
+}
+
+.about-section h2 {
+  font-size: clamp(1.55rem, 3.6vw, 2.55rem);
+  text-wrap: balance;
+}
+
+.about-questions {
+  display: grid;
+  margin-top: 22px;
+  padding: 18px 22px;
+  border-left: 3px solid var(--leaf);
+  background: var(--mist);
+  gap: 8px;
+}
+
+.about-questions p {
+  margin: 0;
+  color: var(--ink);
+  font-weight: 700;
+  line-height: 1.7;
+}
+
+.cards.four-up {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.card-kicker {
+  display: block;
+  margin-bottom: 8px;
+  color: var(--leaf);
+  font-size: 12px;
+  font-weight: 850;
+  letter-spacing: 0.08em;
+}
+
+.about-actions {
+  align-items: stretch;
 }
 
 .aside-panel {
@@ -999,7 +1071,23 @@ main {
   }
 
   .hero h1 {
-    font-size: clamp(1.8rem, 8.5vw, 2.15rem);
+    font-size: clamp(1.55rem, 7.8vw, 2rem);
+  }
+
+  .home-section-title {
+    font-size: clamp(1.55rem, 7vw, 1.9rem);
+  }
+
+  .about-hero h1 {
+    font-size: clamp(1.7rem, 7vw, 2rem);
+  }
+
+  .about-section h2 .heading-line {
+    display: inline;
+  }
+
+  .page-intro br {
+    display: none;
   }
 
   .hero-lede,
@@ -1030,6 +1118,14 @@ main {
     padding-block: 58px;
   }
 
+  .section.about-section {
+    padding-block: 50px;
+  }
+
+  .cards.four-up {
+    grid-template-columns: 1fr;
+  }
+
   .card,
   .tool-card,
   .link-card,
@@ -1040,6 +1136,10 @@ main {
 
   .vision-panel {
     padding: 24px;
+  }
+
+  .about-questions {
+    padding: 16px;
   }
 
   .updates li {

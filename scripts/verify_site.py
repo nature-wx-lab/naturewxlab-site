@@ -267,7 +267,7 @@ def main() -> int:
     expected_brand_icon = '<img src="/assets/icons/naturewxlab-icon.png" width="54" height="54" alt="" aria-hidden="true">'
     expected_favicon = '<link rel="icon" href="/assets/icons/naturewxlab-icon.png" type="image/png">'
     expected_apple_touch = '<link rel="apple-touch-icon" href="/assets/icons/naturewxlab-icon.png">'
-    expected_stylesheet = '<link rel="stylesheet" href="/assets/css/styles.css?v=20260714-7">'
+    expected_stylesheet = '<link rel="stylesheet" href="/assets/css/styles.css?v=20260715-1">'
     for relative in HTML_FILES:
         text = relative.read_text(encoding="utf-8")
         page = relative.relative_to(SITE_ROOT)
@@ -280,6 +280,87 @@ def main() -> int:
         if any(old_asset in text for old_asset in ("favicon.svg", "apple-touch-icon.png", "logo.svg")):
             errors.append(f"{page}: obsolete brand icon reference remains")
     home_text = (SITE_ROOT / "index.html").read_text(encoding="utf-8")
+    about_text = (SITE_ROOT / "about/index.html").read_text(encoding="utf-8")
+    expected_home_meta = (
+        '<title>NatureWxLab｜データと経験を、自然と暮らす知恵へ</title>',
+        '<meta name="description" content="NatureWxLabは、現役気象予報士の知識と実体験をもとに、気象データを自然のある暮らしに役立つ情報、無料ツール、記事、動画へ変えて届ける小さな研究拠点です。">',
+        '<meta property="og:title" content="NatureWxLab｜データと経験を、自然と暮らす知恵へ">',
+        '<meta property="og:description" content="NatureWxLabは、現役気象予報士の知識と実体験をもとに、気象データを自然のある暮らしに役立つ情報、無料ツール、記事、動画へ変えて届ける小さな研究拠点です。">',
+        '<meta name="twitter:title" content="NatureWxLab｜データと経験を、自然と暮らす知恵へ">',
+        '<meta name="twitter:description" content="NatureWxLabは、現役気象予報士の知識と実体験をもとに、気象データを自然のある暮らしに役立つ情報、無料ツール、記事、動画へ変えて届ける小さな研究拠点です。">',
+    )
+    for markup in expected_home_meta:
+        if home_text.count(markup) != 1:
+            errors.append(f"index.html: required home metadata is missing or duplicated: {markup}")
+    expected_home_copy = (
+        '<p class="eyebrow">NATURE × WEATHER × DAILY LIFE</p>',
+        '<h1>データと経験が交わり、<span>自然と暮らす知恵に変わる場所。</span></h1>',
+        'NatureWxLabは、現役気象予報士の知識と実体験をもとに、<br>自然のある暮らしに役立つ情報を届ける、小さな研究拠点です。',
+        '<h2 id="approach-title" class="home-section-title"><span class="heading-line">天気を読み、自然で確かめ、</span><span class="heading-line">知恵をひらく。</span></h2>',
+        '<h3>気象データを読み解く</h3>',
+        '<h3>自然の中で確かめる</h3>',
+        '<h3>知恵をひらき、つなげる</h3>',
+        '<h2 id="tools-title" class="home-section-title"><span class="heading-line">“天気を味方につけた管理術”を、</span><span class="heading-line">誰でも使えるカタチに。</span></h2>',
+        '共通のものさしを目指しています。',
+    )
+    for markup in expected_home_copy:
+        if home_text.count(markup) != 1:
+            errors.append(f"index.html: required home copy is missing or duplicated: {markup}")
+    for obsolete_copy in (
+        "データを、使える手がかりへ",
+        "天気と気候を調べる4つのツール",
+        "自然の営みと結ぶ",
+        "判断は利用者に残す",
+    ):
+        if obsolete_copy in home_text:
+            errors.append(f"index.html: obsolete home copy remains: {obsolete_copy}")
+
+    expected_about_meta = (
+        '<title>NatureWxLabとは｜データと経験を、自然と暮らす知恵へ</title>',
+        '<meta name="description" content="NatureWxLabは、現役気象予報士が個人で運営し、気象データと実体験、AIとの協働から、自然のある暮らしに役立つ情報、ツール、記事、動画を生み出す小さな研究拠点です。">',
+        '<meta property="og:title" content="NatureWxLabとは｜データと経験を、自然と暮らす知恵へ">',
+        '<meta property="og:description" content="NatureWxLabは、現役気象予報士が個人で運営し、気象データと実体験、AIとの協働から、自然のある暮らしに役立つ情報、ツール、記事、動画を生み出す小さな研究拠点です。">',
+        '<meta name="twitter:title" content="NatureWxLabとは｜データと経験を、自然と暮らす知恵へ">',
+        '<meta name="twitter:description" content="NatureWxLabは、現役気象予報士が個人で運営し、気象データと実体験、AIとの協働から、自然のある暮らしに役立つ情報、ツール、記事、動画を生み出す小さな研究拠点です。">',
+    )
+    for markup in expected_about_meta:
+        if about_text.count(markup) != 1:
+            errors.append(f"about/index.html: required metadata is missing or duplicated: {markup}")
+    expected_about_copy = (
+        '<p class="eyebrow">ABOUT NATUREWXLAB</p>',
+        '<h1><span class="heading-line">一人の気象予報士から始まり、</span><span class="heading-line">知恵がつながる場所へ。</span></h1>',
+        "個人で運営している小さな研究拠点です。",
+        '<p class="eyebrow">ORIGIN</p>',
+        '<p class="eyebrow">THE LAB CYCLE</p>',
+        '<p class="eyebrow">SHARED LANGUAGE</p>',
+        '<p class="eyebrow">HUMAN × AI</p>',
+        '<p class="eyebrow">OUR PRINCIPLES</p>',
+        '<p class="eyebrow">FROM NOW TO NEXT</p>',
+        "ChatGPT、Codex、ClaudeなどのAIを協働相手として活用しています。",
+        "人が責任を持って確認しながら形にします。",
+        "さらに将来は、植物やメダカとの出会い、自然をテーマにした店やイベントなど、画面の外にも体験が広がる場所を目指します。",
+    )
+    for markup in expected_about_copy:
+        if about_text.count(markup) != 1:
+            errors.append(f"about/index.html: required copy is missing or duplicated: {markup}")
+    expected_about_links = (
+        '<a class="button" href="/tools/">4つの公開ツールを見る</a>',
+        '<a class="button" href="/tools/">現在の公開ツールを見る</a>',
+        '<a class="button secondary" href="/vision/">これからの構想を読む</a>',
+        '<a class="button secondary" href="https://note.com/nature_wx_lab/m/mef6e32773d03" data-track-destination="note_profile">noteの詳しい自己紹介を読む</a>',
+    )
+    for markup in expected_about_links:
+        if about_text.count(markup) != 1:
+            errors.append(f"about/index.html: required CTA is missing or duplicated: {markup}")
+    for obsolete_copy in (
+        "天気と自然の距離を近づける",
+        "大切にしていること",
+        "発信者について",
+        "活動の3つの柱",
+    ):
+        if obsolete_copy in about_text:
+            errors.append(f"about/index.html: obsolete about copy remains: {obsolete_copy}")
+
     expected_hero = '<img src="/assets/images/hero-family-garden-medaka-v2.png" width="1254" height="1254" alt="" decoding="async" fetchpriority="high">'
     if home_text.count(expected_hero) != 1:
         errors.append("index.html: supplied family garden hero image is missing or duplicated")
