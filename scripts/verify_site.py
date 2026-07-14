@@ -3,6 +3,7 @@
 
 from __future__ import annotations
 
+import hashlib
 import json
 import os
 import re
@@ -26,13 +27,9 @@ REQUIRED_FILES = {
     "assets/css/styles.css",
     "assets/js/analytics-config.js",
     "assets/js/analytics-consent.js",
-    "assets/icons/favicon.svg",
-    "assets/icons/favicon-32.png",
-    "assets/icons/logo.svg",
-    "assets/icons/apple-touch-icon.png",
-    "assets/images/hero-weather-nature-v2.avif",
-    "assets/images/hero-weather-nature-v2.png",
-    "assets/images/og-image.png",
+    "assets/icons/naturewxlab-icon.png",
+    "assets/images/hero-family-garden-medaka.jpg",
+    "assets/images/og-image.jpg",
     "assets/images/og-image.svg",
     "robots.txt",
     "sitemap.xml",
@@ -44,7 +41,7 @@ LOCAL_ASSET_ATTRIBUTES = {
     ("script", "src"),
     ("link", "href"),
     ("img", "src"),
-    ("source", "src"),
+    ("source", "srcset"),
 }
 MEASUREMENT_ID_RE = re.compile(r"\bG-[A-Z0-9]{6,}\b")
 EMAIL_RE = re.compile(r"\b[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}\b", re.IGNORECASE)
@@ -135,6 +132,15 @@ def main() -> int:
         errors.append(f"missing required file: {missing}")
     for unexpected in sorted(actual_files - REQUIRED_FILES):
         errors.append(f"unexpected file in deploy artifact: {unexpected}")
+    expected_asset_sha256 = {
+        "assets/icons/naturewxlab-icon.png": "7dd3f9bb3cd0eebeaf76a8e0145656bab6391a0e5892334d7ebb32953d9093e1",
+        "assets/images/hero-family-garden-medaka.jpg": "26a70555b1dbf35cd64507d2d0ea3ab990ab1a8fc31bd1c57b84ca2ec5f3a440",
+        "assets/images/og-image.jpg": "9198c25cae29d01cdfaab1941c5095bad66627abd17003bedf6c04294e9ad35b",
+    }
+    for relative, expected_sha256 in expected_asset_sha256.items():
+        asset = SITE_ROOT / relative
+        if asset.is_file() and hashlib.sha256(asset.read_bytes()).hexdigest() != expected_sha256:
+            errors.append(f"{relative}: supplied image bytes changed unexpectedly")
     for path in SITE_ROOT.rglob("*"):
         if path.is_symlink():
             errors.append(f"symlink is not allowed in deploy artifact: {path.relative_to(SITE_ROOT)}")
@@ -196,16 +202,44 @@ def main() -> int:
             )
             if not card_pattern.search(text):
                 errors.append(f"{relative}: unexpected status or link label for {tool_name}")
+    expected_brand_icon = '<img src="/assets/icons/naturewxlab-icon.png" width="54" height="54" alt="" aria-hidden="true">'
+    expected_favicon = '<link rel="icon" href="/assets/icons/naturewxlab-icon.png" type="image/png">'
+    expected_apple_touch = '<link rel="apple-touch-icon" href="/assets/icons/naturewxlab-icon.png">'
+    for relative in HTML_FILES:
+        text = relative.read_text(encoding="utf-8")
+        page = relative.relative_to(SITE_ROOT)
+        if text.count(expected_brand_icon) != 1:
+            errors.append(f"{page}: official brand icon is missing or duplicated")
+        if text.count(expected_favicon) != 1 or text.count(expected_apple_touch) != 1:
+            errors.append(f"{page}: official browser icon links are missing or duplicated")
+        if any(old_asset in text for old_asset in ("favicon.svg", "apple-touch-icon.png", "logo.svg")):
+            errors.append(f"{page}: obsolete brand icon reference remains")
+    home_text = (SITE_ROOT / "index.html").read_text(encoding="utf-8")
+    expected_hero = '<img src="/assets/images/hero-family-garden-medaka.jpg" width="750" height="748" alt="" decoding="async" fetchpriority="high">'
+    if home_text.count(expected_hero) != 1:
+        errors.append("index.html: supplied family garden hero image is missing or duplicated")
+    if "hero-weather-nature-v2" in home_text:
+        errors.append("index.html: obsolete hero image reference remains")
     for relative, canonical in expected_canonicals.items():
         text = (SITE_ROOT / relative).read_text(encoding="utf-8")
         if text.count(f'<link rel="canonical" href="{canonical}">') != 1:
             errors.append(f"{relative}: canonical URL is missing or duplicated")
-        if 'content="https://naturewxlab.com/assets/images/og-image.png"' not in text:
+        if 'content="https://naturewxlab.com/assets/images/og-image.jpg"' not in text:
             errors.append(f"{relative}: social preview image is missing")
 
     manifest = json.loads((SITE_ROOT / "site.webmanifest").read_text(encoding="utf-8"))
     if manifest.get("name") != "NatureWxLab" or manifest.get("display") != "browser":
         errors.append("site.webmanifest: unexpected name or display mode")
+    expected_manifest_icons = [
+        {
+            "src": "/assets/icons/naturewxlab-icon.png",
+            "sizes": "1024x1024",
+            "type": "image/png",
+            "purpose": "any",
+        }
+    ]
+    if manifest.get("icons") != expected_manifest_icons:
+        errors.append("site.webmanifest: official icon set does not match")
     for icon in manifest.get("icons", []):
         icon_target = internal_target(icon.get("src", ""))
         if icon_target is None or not icon_target.is_file():
