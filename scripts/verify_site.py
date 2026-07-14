@@ -179,6 +179,23 @@ def main() -> int:
         Path("vision/index.html"): "https://naturewxlab.com/vision/",
         Path("policy/index.html"): "https://naturewxlab.com/policy/",
     }
+    expected_tool_states = {
+        "気温リスクナビ": ("status", "公開中", "気温リスクナビを開く"),
+        "天気分布予報プラス": ("status", "公開中", "天気分布予報プラスを開く"),
+        "うるおい管理ナビ": ("status beta", "β版", "うるおい管理ナビβ版を開く"),
+        "気候ものさしナビ": ("status beta", "β版", "気候ものさしナビβ版を開く"),
+    }
+    for relative in (Path("index.html"), Path("tools/index.html")):
+        text = (SITE_ROOT / relative).read_text(encoding="utf-8")
+        for tool_name, (status_class, status_label, link_label) in expected_tool_states.items():
+            card_pattern = re.compile(
+                rf'<article class="tool-card">(?:(?!</article>).)*<h3>{re.escape(tool_name)}</h3>'
+                rf'(?:(?!</article>).)*<span class="{status_class}">{status_label}</span>'
+                rf'(?:(?!</article>).)*>{re.escape(link_label)}</a>(?:(?!</article>).)*</article>',
+                re.DOTALL,
+            )
+            if not card_pattern.search(text):
+                errors.append(f"{relative}: unexpected status or link label for {tool_name}")
     for relative, canonical in expected_canonicals.items():
         text = (SITE_ROOT / relative).read_text(encoding="utf-8")
         if text.count(f'<link rel="canonical" href="{canonical}">') != 1:
