@@ -267,7 +267,7 @@ def main() -> int:
     expected_brand_icon = '<img src="/assets/icons/naturewxlab-icon.png" width="54" height="54" alt="" aria-hidden="true">'
     expected_favicon = '<link rel="icon" href="/assets/icons/naturewxlab-icon.png" type="image/png">'
     expected_apple_touch = '<link rel="apple-touch-icon" href="/assets/icons/naturewxlab-icon.png">'
-    expected_stylesheet = '<link rel="stylesheet" href="/assets/css/styles.css?v=20260714-6">'
+    expected_stylesheet = '<link rel="stylesheet" href="/assets/css/styles.css?v=20260714-7">'
     for relative in HTML_FILES:
         text = relative.read_text(encoding="utf-8")
         page = relative.relative_to(SITE_ROOT)
