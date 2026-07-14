@@ -28,6 +28,12 @@ REQUIRED_FILES = {
     "assets/js/analytics-config.js",
     "assets/js/analytics-consent.js",
     "assets/icons/naturewxlab-icon.png",
+    "assets/icons/service-auction.svg",
+    "assets/icons/service-mercari.png",
+    "assets/icons/social-instagram.svg",
+    "assets/icons/social-note.svg",
+    "assets/icons/social-x.svg",
+    "assets/icons/social-youtube.svg",
     "assets/images/hero-family-garden-medaka-v2.png",
     "assets/images/og-image.jpg",
     "assets/images/og-image.svg",
@@ -134,13 +140,68 @@ def main() -> int:
         errors.append(f"unexpected file in deploy artifact: {unexpected}")
     expected_asset_sha256 = {
         "assets/icons/naturewxlab-icon.png": "7dd3f9bb3cd0eebeaf76a8e0145656bab6391a0e5892334d7ebb32953d9093e1",
+        "assets/icons/service-auction.svg": "478d6b3dfd463b6d20e231196282f21dcf2c713c3ccfec46e37620b194d673d6",
+        "assets/icons/service-mercari.png": "e10e59e32930d1ef264d9aca191f1cee9e868a2abc30188b97b14a7a89575ab7",
+        "assets/icons/social-instagram.svg": "103ab72561b73436703a2129eaf77bb9357b008b8f97a344ba0389a3990c9d41",
+        "assets/icons/social-note.svg": "aae7e7cf0b0e9af6ba7fad113d38ade534835b5235c5c0ba9ae74814c83a34c8",
+        "assets/icons/social-x.svg": "30bd48f0082d513928f4a04e6df09a22bcfb045ca9a8c52ecbff721fb4017012",
+        "assets/icons/social-youtube.svg": "0410b0414d8f8c5f413970592e0a11edb3e3293f0e8efdd20c7d74d16067dd8b",
         "assets/images/hero-family-garden-medaka-v2.png": "8e812c8d3e02afd15fa60fffcd65195940a1623c998e0ebc1a72842ae5462bc1",
         "assets/images/og-image.jpg": "9198c25cae29d01cdfaab1941c5095bad66627abd17003bedf6c04294e9ad35b",
     }
     for relative, expected_sha256 in expected_asset_sha256.items():
         asset = SITE_ROOT / relative
         if asset.is_file() and hashlib.sha256(asset.read_bytes()).hexdigest() != expected_sha256:
-            errors.append(f"{relative}: supplied image bytes changed unexpectedly")
+            errors.append(f"{relative}: pinned asset bytes changed unexpectedly")
+
+    safe_svg_files = (
+        "assets/icons/service-auction.svg",
+        "assets/icons/social-note.svg",
+        "assets/icons/social-x.svg",
+        "assets/icons/social-instagram.svg",
+        "assets/icons/social-youtube.svg",
+    )
+    allowed_svg_tags = {"svg", "rect", "path"}
+    forbidden_svg_markers = (
+        "<!doctype",
+        "<!entity",
+        "<?xml-stylesheet",
+        "javascript:",
+        "data:",
+        "url(",
+    )
+    for relative in safe_svg_files:
+        asset = SITE_ROOT / relative
+        if not asset.is_file():
+            continue
+        svg_text = asset.read_text(encoding="utf-8")
+        lowered_svg = svg_text.lower()
+        for marker in forbidden_svg_markers:
+            if marker in lowered_svg:
+                errors.append(f"{relative}: forbidden SVG marker: {marker}")
+        try:
+            svg_root = ET.fromstring(svg_text)
+        except ET.ParseError as exc:
+            errors.append(f"{relative}: invalid SVG XML: {exc}")
+            continue
+        root_tag = svg_root.tag.rsplit("}", 1)[-1]
+        if root_tag != "svg" or not svg_root.get("viewBox"):
+            errors.append(f"{relative}: SVG root or viewBox is invalid")
+        for element in svg_root.iter():
+            tag_name = element.tag.rsplit("}", 1)[-1]
+            if tag_name not in allowed_svg_tags:
+                errors.append(f"{relative}: forbidden SVG element: {tag_name}")
+            if element.text and element.text.strip():
+                errors.append(f"{relative}: visible or executable SVG text is not allowed")
+            if element.tail and element.tail.strip():
+                errors.append(f"{relative}: unexpected SVG tail text is not allowed")
+            for attribute, value in element.attrib.items():
+                attribute_name = attribute.rsplit("}", 1)[-1].lower()
+                lowered_value = value.strip().lower()
+                if attribute_name.startswith("on") or attribute_name in {"href", "style"}:
+                    errors.append(f"{relative}: forbidden SVG attribute: {attribute_name}")
+                if any(marker in lowered_value for marker in ("javascript:", "data:", "url(")):
+                    errors.append(f"{relative}: forbidden SVG attribute value")
     for path in SITE_ROOT.rglob("*"):
         if path.is_symlink():
             errors.append(f"symlink is not allowed in deploy artifact: {path.relative_to(SITE_ROOT)}")
@@ -186,18 +247,19 @@ def main() -> int:
         Path("policy/index.html"): "https://naturewxlab.com/policy/",
     }
     expected_tool_states = {
-        "気温リスクナビ": ("status", "公開中", "気温リスクナビを開く"),
-        "天気分布予報プラス": ("status", "公開中", "天気分布予報プラスを開く"),
-        "うるおい管理ナビ": ("status beta", "β版", "うるおい管理ナビβ版を開く"),
-        "気候ものさしナビ": ("status beta", "β版", "気候ものさしナビβ版を開く"),
+        "気温リスクナビ": ("status", "公開中", "気温リスクナビを開く", "https://nature-wx-lab.github.io/temperature-risk-navi/"),
+        "天気分布予報プラス": ("status", "公開中", "天気分布予報プラスを開く", "https://nature-wx-lab.github.io/weather-distribution-plus/"),
+        "うるおい管理ナビ": ("status beta", "β版", "うるおい管理ナビβ版を開く", "https://nature-wx-lab.github.io/water_care/"),
+        "気候ものさしナビ": ("status beta", "β版", "気候ものさしナビβ版を開く", "https://nature-wx-lab.github.io/climate-outlook-navi/"),
     }
     for relative in (Path("index.html"), Path("tools/index.html")):
         text = (SITE_ROOT / relative).read_text(encoding="utf-8")
-        for tool_name, (status_class, status_label, link_label) in expected_tool_states.items():
+        for tool_name, (status_class, status_label, link_label, link_url) in expected_tool_states.items():
             card_pattern = re.compile(
                 rf'<article class="tool-card">(?:(?!</article>).)*<h3>{re.escape(tool_name)}</h3>'
                 rf'(?:(?!</article>).)*<span class="{status_class}">{status_label}</span>'
-                rf'(?:(?!</article>).)*>{re.escape(link_label)}</a>(?:(?!</article>).)*</article>',
+                rf'(?:(?!</article>).)*<a class="button compact" href="{re.escape(link_url)}" '
+                rf'data-track-destination="[^"]+">{re.escape(link_label)}</a>(?:(?!</article>).)*</article>',
                 re.DOTALL,
             )
             if not card_pattern.search(text):
@@ -205,7 +267,7 @@ def main() -> int:
     expected_brand_icon = '<img src="/assets/icons/naturewxlab-icon.png" width="54" height="54" alt="" aria-hidden="true">'
     expected_favicon = '<link rel="icon" href="/assets/icons/naturewxlab-icon.png" type="image/png">'
     expected_apple_touch = '<link rel="apple-touch-icon" href="/assets/icons/naturewxlab-icon.png">'
-    expected_stylesheet = '<link rel="stylesheet" href="/assets/css/styles.css?v=20260714-4">'
+    expected_stylesheet = '<link rel="stylesheet" href="/assets/css/styles.css?v=20260714-5">'
     for relative in HTML_FILES:
         text = relative.read_text(encoding="utf-8")
         page = relative.relative_to(SITE_ROOT)
@@ -226,6 +288,72 @@ def main() -> int:
     expected_instagram = '<a href="https://www.instagram.com/nature_wx_lab/" data-track-destination="media_instagram">Instagramを見る</a>'
     if home_text.count(expected_instagram) != 1:
         errors.append("index.html: official Instagram link is missing or duplicated")
+    expected_social_icons = {
+        "note": '<span class="service-mark note" aria-hidden="true"><img src="/assets/icons/social-note.svg" width="42" height="42" alt=""></span>',
+        "X": '<span class="service-mark x" aria-hidden="true"><img src="/assets/icons/social-x.svg" width="24" height="24" alt=""></span>',
+        "Instagram": '<span class="service-mark instagram" aria-hidden="true"><img src="/assets/icons/social-instagram.svg" width="24" height="24" alt=""></span>',
+        "YouTube": '<span class="service-mark youtube" aria-hidden="true"><img src="/assets/icons/social-youtube.svg" width="24" height="24" alt=""></span>',
+    }
+    for service, markup in expected_social_icons.items():
+        if home_text.count(markup) != 1:
+            errors.append(f"index.html: official {service} mark is missing or duplicated")
+    expected_media_cards = (
+        ("YouTube", expected_social_icons["YouTube"], "https://www.youtube.com/@nature_wx_lab", "media_youtube", "YouTubeを見る"),
+        ("note", expected_social_icons["note"], "https://note.com/nature_wx_lab", "media_note", "noteを読む"),
+        ("X", expected_social_icons["X"], "https://x.com/nature_wx_lab", "media_x", "Xの投稿を見る"),
+        ("Instagram", expected_social_icons["Instagram"], "https://www.instagram.com/nature_wx_lab/", "media_instagram", "Instagramを見る"),
+    )
+    media_positions: list[int] = []
+    for service, icon_markup, link_url, destination, link_label in expected_media_cards:
+        card_pattern = re.compile(
+            rf'<article class="link-card">\s*{re.escape(icon_markup)}\s*<h3>{re.escape(service)}</h3>'
+            rf'(?:(?!</article>).)*<a href="{re.escape(link_url)}" '
+            rf'data-track-destination="{destination}">{re.escape(link_label)}</a>\s*</article>',
+            re.DOTALL,
+        )
+        card_match = card_pattern.search(home_text)
+        if card_match is None:
+            errors.append(f"index.html: {service} mark, name, and link must share one card")
+            media_positions.append(-1)
+        else:
+            media_positions.append(card_match.start())
+    if any(position < 0 for position in media_positions) or media_positions != sorted(media_positions):
+        errors.append("index.html: media cards must be ordered YouTube, note, X, Instagram")
+    obsolete_social_icons = (
+        '<span class="service-mark note" aria-hidden="true">note</span>',
+        '<span class="service-mark" aria-hidden="true">X</span>',
+        '<span class="service-mark instagram" aria-hidden="true">IG</span>',
+        '<span class="service-mark youtube" aria-hidden="true">▶</span>',
+    )
+    if any(markup in home_text for markup in obsolete_social_icons):
+        errors.append("index.html: obsolete text-only social mark remains")
+    expected_mercari_icon = '<span class="service-mark mercari" aria-hidden="true"><img src="/assets/icons/service-mercari.png" width="42" height="42" alt=""></span>'
+    if home_text.count(expected_mercari_icon) != 1:
+        errors.append("index.html: official Mercari service icon is missing or duplicated")
+    if '<span class="service-mark" aria-hidden="true">M</span>' in home_text:
+        errors.append("index.html: obsolete text-only Mercari mark remains")
+    expected_auction_icon = '<span class="service-mark auction" aria-hidden="true"><img src="/assets/icons/service-auction.svg" width="24" height="24" alt=""></span>'
+    expected_auction_name = '<h3>Yahoo!オークション</h3>'
+    expected_auction_link = '>Yahoo!オークションの出品を見る</a>'
+    if home_text.count(expected_auction_icon) != 1:
+        errors.append("index.html: neutral auction mark is missing or duplicated")
+    if home_text.count(expected_auction_name) != 1 or home_text.count(expected_auction_link) != 1:
+        errors.append("index.html: current Yahoo! Auctions service name is missing or duplicated")
+    if '<span class="service-mark" aria-hidden="true">Y!</span>' in home_text:
+        errors.append("index.html: unauthorized text-only Yahoo brand mark remains")
+    expected_sales_cards = (
+        (expected_mercari_icon, "メルカリ", "https://jp.mercari.com/user/profile/474428763", "sales_mercari", "メルカリの出品を見る"),
+        (expected_auction_icon, "Yahoo!オークション", "https://auctions.yahoo.co.jp/seller/2Nn3kZv4J22cbfTSoVYSVRRp2M6Ao?user_type=c", "sales_yahoo_auctions", "Yahoo!オークションの出品を見る"),
+    )
+    for icon_markup, service, link_url, destination, link_label in expected_sales_cards:
+        card_pattern = re.compile(
+            rf'<article class="link-card">\s*{re.escape(icon_markup)}\s*<h3>{re.escape(service)}</h3>'
+            rf'(?:(?!</article>).)*<a href="{re.escape(link_url)}" '
+            rf'data-track-destination="{destination}">{re.escape(link_label)}</a>\s*</article>',
+            re.DOTALL,
+        )
+        if card_pattern.search(home_text) is None:
+            errors.append(f"index.html: {service} mark, name, and link must share one card")
     for relative, canonical in expected_canonicals.items():
         text = (SITE_ROOT / relative).read_text(encoding="utf-8")
         if text.count(f'<link rel="canonical" href="{canonical}">') != 1:

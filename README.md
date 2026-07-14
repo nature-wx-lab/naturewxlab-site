@@ -35,6 +35,20 @@ NATUREWXLAB_GA4_ID='専用測定ID' PYTHONDONTWRITEBYTECODE=1 python3 scripts/ve
 
 検査は `site/` のHTML・リンク・GA4安全条件・セキュリティヘッダーに加え、リポジトリ全体のローカル絶対パスと生成バイトコードを確認します。
 
+## Social brand assets
+
+トップの媒体カードでは、各サービスを識別する目的に限ってローカル保存したブランドマークを使用します。外部CDNや各サービスの画像URLは読み込まないため、アイコン表示だけで第三者への通信は発生しません。
+
+- note：公式の[ブランドガイドライン](https://www.help-note.com/hc/ja/articles/360000235582-%E3%83%96%E3%83%A9%E3%83%B3%E3%83%89%E3%82%AC%E3%82%A4%E3%83%89%E3%83%A9%E3%82%A4%E3%83%B3-%E3%83%AD%E3%82%B4%E3%83%87%E3%83%BC%E3%82%BF-%E3%82%AB%E3%83%A9%E3%83%BC)で案内される小サイズ向けの角丸 `n` アイコン
+- X：公式の[ブランドツールキット](https://about.x.com/ja/who-we-are/brand-toolkit)で配布されるXロゴ
+- Instagram：Meta公式の[Instagramブランドリソース](https://about.meta.com/brand/resources/instagram/instagram-brand/)で配布される黒色グリフ
+- YouTube：公式の[YouTubeブランドリソース](https://brand.youtube/youtube-icon/)で使用されている小型ソーシャルリンク用のYouTube Redマーク
+- メルカリ：公式の[ロゴ・アイコン利用規約](https://about.mercari.com/logo-terms/)に従い、[公式プレスキット](https://about.mercari.com/press/press-kit/mercari/)配布のサービスアイコンを無加工で使用
+
+Yahoo!オークションの公式ロゴ・サービスアイコンは、LINEヤフーの[ブランド資産利用ガイドライン](https://www.lycorp.co.jp/ja/company/trademarks/)上、事前承諾なしでは使用しません。承諾を得るまでは、ブランド資産ではない自作の汎用オークションマークと正式サービス名で識別します。
+
+各ブランドマークの権利はそれぞれの権利者に帰属します。リンク先の識別以外には使用せず、提携・承認を示すものではありません。
+
 ## Publication boundary
 
 - Cloudflare Pagesのビルド出力ディレクトリは `site` に固定し、READMEや検査スクリプトを配信しません。

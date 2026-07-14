@@ -506,20 +506,53 @@ main {
   font-weight: 900;
 }
 
+.service-mark img {
+  display: block;
+  width: 24px;
+  height: 24px;
+  object-fit: contain;
+}
+
+.service-mark.x {
+  border-color: #000;
+  background: #000;
+}
+
 .service-mark.youtube {
   border-color: #f0cccc;
-  background: #fff3f3;
+  background: #fff;
   color: #b32626;
 }
 
 .service-mark.note {
+  border-color: transparent;
+  background: transparent;
   color: #24645b;
+}
+
+.service-mark.note img {
+  width: 42px;
+  height: 42px;
 }
 
 .service-mark.instagram {
   border-color: #e3c6da;
-  background: #fff2f8;
+  background: #fff;
   color: #9b356f;
+}
+
+.service-mark.mercari {
+  border-color: transparent;
+  background: transparent;
+}
+
+.service-mark.mercari img {
+  width: 42px;
+  height: 42px;
+}
+
+.service-mark.auction {
+  background: #f2f8f5;
 }
 
 .link-card a {
