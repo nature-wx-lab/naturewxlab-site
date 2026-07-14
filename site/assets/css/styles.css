@@ -230,6 +230,10 @@ main {
   letter-spacing: -0.035em;
 }
 
+.hero h1 {
+  font-size: clamp(1.8rem, 3.2vw, 2.65rem);
+}
+
 .hero h1 span {
   display: block;
   margin-top: 5px;
@@ -995,7 +999,7 @@ main {
   }
 
   .hero h1 {
-    font-size: clamp(2.05rem, 10vw, 2.5rem);
+    font-size: clamp(1.8rem, 8.5vw, 2.15rem);
   }
 
   .hero-lede,
