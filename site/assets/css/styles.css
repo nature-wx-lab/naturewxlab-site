@@ -299,17 +299,21 @@ main {
 .hero-visual {
   display: grid;
   min-height: 0;
+  align-items: center;
   justify-items: end;
 }
 
 .hero-visual picture {
   display: block;
   width: min(410px, 100%);
+  aspect-ratio: 4 / 3;
 }
 
 .hero-visual img {
   width: 100%;
   height: auto;
+  aspect-ratio: 4 / 3;
+  object-fit: contain;
   border: 1px solid rgba(36, 114, 93, 0.2);
   border-radius: var(--radius);
   background: #f8fbf9;

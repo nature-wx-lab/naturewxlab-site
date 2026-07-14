@@ -64,6 +64,7 @@ class PageParser(HTMLParser):
         self.has_analytics_config = False
         self.has_analytics_consent = False
         self.has_consent_ui = False
+        self.has_versioned_stylesheet = False
 
     def handle_starttag(self, tag: str, attrs: list[tuple[str, str | None]]) -> None:
         attributes = dict(attrs)
@@ -96,6 +97,10 @@ class PageParser(HTMLParser):
             self.has_analytics_config = True
         if tag == "script" and attributes.get("src") == "/assets/js/analytics-consent.js":
             self.has_analytics_consent = True
+        if tag == "link" and attributes.get("rel") == "stylesheet":
+            stylesheet = urlsplit(attributes.get("href") or "")
+            if stylesheet.path == "/assets/css/styles.css" and stylesheet.query:
+                self.has_versioned_stylesheet = True
         if "data-analytics-consent" in attributes:
             self.has_consent_ui = True
         for element, attribute in LOCAL_ASSET_ATTRIBUTES:
@@ -156,6 +161,8 @@ def main() -> int:
             errors.append(f"{relative}: expected one viewport meta")
         if not parser.has_analytics_config or not parser.has_analytics_consent:
             errors.append(f"{relative}: analytics safety scripts are missing")
+        if not parser.has_versioned_stylesheet:
+            errors.append(f"{relative}: stylesheet URL must include a cache-busting version")
         if not parser.has_consent_ui:
             errors.append(f"{relative}: analytics consent UI is missing")
         for href in parser.links:
