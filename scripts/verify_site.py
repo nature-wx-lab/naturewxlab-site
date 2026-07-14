@@ -30,6 +30,8 @@ REQUIRED_FILES = {
     "assets/icons/favicon-32.png",
     "assets/icons/logo.svg",
     "assets/icons/apple-touch-icon.png",
+    "assets/images/hero-weather-nature-v2.avif",
+    "assets/images/hero-weather-nature-v2.png",
     "assets/images/og-image.png",
     "assets/images/og-image.svg",
     "robots.txt",

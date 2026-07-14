@@ -137,7 +137,13 @@ a:hover {
 
 .brand-wordmark {
   display: grid;
+  font-size: 1.03rem;
+  letter-spacing: -0.015em;
   line-height: 1.1;
+}
+
+.brand-wx {
+  color: var(--sky);
 }
 
 .brand-wordmark small {
@@ -190,11 +196,11 @@ main {
 
 .hero-inner {
   display: grid;
-  min-height: 560px;
-  padding-block: 64px 70px;
+  min-height: 500px;
+  padding-block: 44px 48px;
   align-items: center;
-  grid-template-columns: minmax(0, 1.12fr) minmax(300px, 0.88fr);
-  gap: 48px;
+  grid-template-columns: minmax(0, 1.18fr) minmax(340px, 0.82fr);
+  gap: 52px;
 }
 
 .eyebrow {
@@ -219,24 +225,24 @@ main {
 .page-hero h1 {
   margin: 0;
   color: var(--ink);
-  font-size: clamp(2.35rem, 6vw, 4.5rem);
-  line-height: 1.12;
+  font-size: clamp(2.35rem, 4vw, 3.6rem);
+  line-height: 1.1;
   letter-spacing: -0.035em;
 }
 
 .hero h1 span {
   display: block;
-  margin-top: 8px;
+  margin-top: 5px;
   color: var(--leaf);
 }
 
 .hero-lede,
 .page-lede {
   max-width: 660px;
-  margin: 24px 0 0;
+  margin: 18px 0 0;
   color: var(--ink-soft);
   font-size: clamp(1rem, 2vw, 1.17rem);
-  line-height: 1.85;
+  line-height: 1.75;
 }
 
 .hero-actions,
@@ -245,6 +251,10 @@ main {
   margin-top: 30px;
   flex-wrap: wrap;
   gap: 12px;
+}
+
+.hero-actions {
+  margin-top: 24px;
 }
 
 .button {
@@ -286,98 +296,25 @@ main {
   font-size: 14px;
 }
 
-.trust-list {
-  display: flex;
-  margin: 28px 0 0;
-  padding: 0;
-  flex-wrap: wrap;
-  gap: 10px;
-  list-style: none;
-}
-
-.trust-list li {
-  padding: 6px 10px;
-  border: 1px solid var(--line);
-  border-radius: 999px;
-  background: rgba(255, 255, 255, 0.72);
-  color: var(--muted);
-  font-size: 12px;
-  font-weight: 700;
-}
-
 .hero-visual {
-  position: relative;
   display: grid;
-  min-height: 390px;
-  place-items: center;
+  min-height: 0;
+  justify-items: end;
 }
 
-.orbit {
-  position: relative;
-  width: min(390px, 100%);
-  aspect-ratio: 1;
-  border: 1px solid rgba(36, 114, 93, 0.18);
-  border-radius: 50%;
-  background: rgba(255, 255, 255, 0.56);
+.hero-visual picture {
+  display: block;
+  width: min(410px, 100%);
 }
 
-.orbit::before,
-.orbit::after {
-  position: absolute;
-  border: 1px dashed rgba(47, 120, 151, 0.25);
-  border-radius: 50%;
-  content: "";
-  inset: 14%;
+.hero-visual img {
+  width: 100%;
+  height: auto;
+  border: 1px solid rgba(36, 114, 93, 0.2);
+  border-radius: var(--radius);
+  background: #f8fbf9;
+  box-shadow: 0 22px 56px rgba(28, 71, 59, 0.13);
 }
-
-.orbit::after {
-  border-style: solid;
-  border-color: rgba(228, 168, 59, 0.24);
-  inset: 31%;
-}
-
-.orbit-core {
-  position: absolute;
-  z-index: 2;
-  display: grid;
-  width: 122px;
-  height: 122px;
-  place-items: center;
-  border: 1px solid var(--line);
-  border-radius: 50%;
-  background: #fff;
-  box-shadow: var(--shadow);
-  inset: 50% auto auto 50%;
-  transform: translate(-50%, -50%);
-}
-
-.orbit-core img {
-  width: 78px;
-  height: 78px;
-}
-
-.orbit-label {
-  position: absolute;
-  z-index: 3;
-  display: grid;
-  min-width: 92px;
-  min-height: 48px;
-  place-items: center;
-  padding: 8px 12px;
-  border: 1px solid var(--line);
-  border-radius: 999px;
-  background: #fff;
-  box-shadow: 0 10px 24px rgba(28, 71, 59, 0.09);
-  color: var(--ink-soft);
-  font-size: 13px;
-  font-weight: 800;
-}
-
-.orbit-label.weather { top: 4%; left: 38%; }
-.orbit-label.plants { top: 34%; right: -3%; }
-.orbit-label.medaka { right: 8%; bottom: 9%; }
-.orbit-label.nature { bottom: 5%; left: 12%; }
-.orbit-label.life { top: 31%; left: -4%; }
 
 .section {
   padding-block: 76px;
@@ -916,6 +853,12 @@ main {
   color: var(--muted);
 }
 
+@media (min-width: 1100px) {
+  .hero h1 span {
+    white-space: nowrap;
+  }
+}
+
 @media (max-width: 880px) {
   .header-inner {
     min-height: auto;
@@ -939,17 +882,17 @@ main {
 
   .hero-inner {
     min-height: 0;
-    padding-block: 52px 58px;
+    padding-block: 40px 44px;
     grid-template-columns: 1fr;
     gap: 24px;
   }
 
   .hero-visual {
-    min-height: 330px;
+    justify-items: center;
   }
 
-  .orbit {
-    width: min(330px, 92%);
+  .hero-visual picture {
+    width: min(420px, 90%);
   }
 
   .cards,
@@ -1003,11 +946,11 @@ main {
   }
 
   .hero-inner {
-    padding-block: 42px 48px;
+    padding-block: 34px 40px;
   }
 
   .hero h1 {
-    font-size: clamp(2.15rem, 12vw, 3.2rem);
+    font-size: clamp(2.05rem, 10vw, 2.5rem);
   }
 
   .hero-lede,
@@ -1026,33 +969,8 @@ main {
     width: 100%;
   }
 
-  .trust-list {
-    gap: 7px;
-  }
-
-  .hero-visual {
-    min-height: 290px;
-  }
-
-  .orbit {
-    width: 275px;
-  }
-
-  .orbit-core {
-    width: 96px;
-    height: 96px;
-  }
-
-  .orbit-core img {
-    width: 62px;
-    height: 62px;
-  }
-
-  .orbit-label {
-    min-width: 78px;
-    min-height: 42px;
-    padding: 6px 9px;
-    font-size: 11px;
+  .hero-visual picture {
+    width: min(310px, 100%);
   }
 
   .section {
