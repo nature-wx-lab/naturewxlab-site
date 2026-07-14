@@ -28,7 +28,7 @@ REQUIRED_FILES = {
     "assets/js/analytics-config.js",
     "assets/js/analytics-consent.js",
     "assets/icons/naturewxlab-icon.png",
-    "assets/images/hero-family-garden-medaka.jpg",
+    "assets/images/hero-family-garden-medaka-v2.png",
     "assets/images/og-image.jpg",
     "assets/images/og-image.svg",
     "robots.txt",
@@ -134,7 +134,7 @@ def main() -> int:
         errors.append(f"unexpected file in deploy artifact: {unexpected}")
     expected_asset_sha256 = {
         "assets/icons/naturewxlab-icon.png": "7dd3f9bb3cd0eebeaf76a8e0145656bab6391a0e5892334d7ebb32953d9093e1",
-        "assets/images/hero-family-garden-medaka.jpg": "26a70555b1dbf35cd64507d2d0ea3ab990ab1a8fc31bd1c57b84ca2ec5f3a440",
+        "assets/images/hero-family-garden-medaka-v2.png": "8e812c8d3e02afd15fa60fffcd65195940a1623c998e0ebc1a72842ae5462bc1",
         "assets/images/og-image.jpg": "9198c25cae29d01cdfaab1941c5095bad66627abd17003bedf6c04294e9ad35b",
     }
     for relative, expected_sha256 in expected_asset_sha256.items():
@@ -205,6 +205,7 @@ def main() -> int:
     expected_brand_icon = '<img src="/assets/icons/naturewxlab-icon.png" width="54" height="54" alt="" aria-hidden="true">'
     expected_favicon = '<link rel="icon" href="/assets/icons/naturewxlab-icon.png" type="image/png">'
     expected_apple_touch = '<link rel="apple-touch-icon" href="/assets/icons/naturewxlab-icon.png">'
+    expected_stylesheet = '<link rel="stylesheet" href="/assets/css/styles.css?v=20260714-4">'
     for relative in HTML_FILES:
         text = relative.read_text(encoding="utf-8")
         page = relative.relative_to(SITE_ROOT)
@@ -212,14 +213,19 @@ def main() -> int:
             errors.append(f"{page}: official brand icon is missing or duplicated")
         if text.count(expected_favicon) != 1 or text.count(expected_apple_touch) != 1:
             errors.append(f"{page}: official browser icon links are missing or duplicated")
+        if text.count(expected_stylesheet) != 1:
+            errors.append(f"{page}: current stylesheet version is missing or duplicated")
         if any(old_asset in text for old_asset in ("favicon.svg", "apple-touch-icon.png", "logo.svg")):
             errors.append(f"{page}: obsolete brand icon reference remains")
     home_text = (SITE_ROOT / "index.html").read_text(encoding="utf-8")
-    expected_hero = '<img src="/assets/images/hero-family-garden-medaka.jpg" width="750" height="748" alt="" decoding="async" fetchpriority="high">'
+    expected_hero = '<img src="/assets/images/hero-family-garden-medaka-v2.png" width="1254" height="1254" alt="" decoding="async" fetchpriority="high">'
     if home_text.count(expected_hero) != 1:
         errors.append("index.html: supplied family garden hero image is missing or duplicated")
-    if "hero-weather-nature-v2" in home_text:
+    if "hero-weather-nature-v2" in home_text or "hero-family-garden-medaka.jpg" in home_text:
         errors.append("index.html: obsolete hero image reference remains")
+    expected_instagram = '<a href="https://www.instagram.com/nature_wx_lab/" data-track-destination="media_instagram">Instagramを見る</a>'
+    if home_text.count(expected_instagram) != 1:
+        errors.append("index.html: official Instagram link is missing or duplicated")
     for relative, canonical in expected_canonicals.items():
         text = (SITE_ROOT / relative).read_text(encoding="utf-8")
         if text.count(f'<link rel="canonical" href="{canonical}">') != 1:
