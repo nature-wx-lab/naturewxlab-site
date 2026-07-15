@@ -267,7 +267,7 @@ def main() -> int:
     expected_brand_icon = '<img src="/assets/icons/naturewxlab-icon.png" width="54" height="54" alt="" aria-hidden="true">'
     expected_favicon = '<link rel="icon" href="/assets/icons/naturewxlab-icon.png" type="image/png">'
     expected_apple_touch = '<link rel="apple-touch-icon" href="/assets/icons/naturewxlab-icon.png">'
-    expected_stylesheet = '<link rel="stylesheet" href="/assets/css/styles.css?v=20260715-1">'
+    expected_stylesheet = '<link rel="stylesheet" href="/assets/css/styles.css?v=20260715-2">'
     for relative in HTML_FILES:
         text = relative.read_text(encoding="utf-8")
         page = relative.relative_to(SITE_ROOT)
@@ -281,6 +281,7 @@ def main() -> int:
             errors.append(f"{page}: obsolete brand icon reference remains")
     home_text = (SITE_ROOT / "index.html").read_text(encoding="utf-8")
     about_text = (SITE_ROOT / "about/index.html").read_text(encoding="utf-8")
+    styles_text = (SITE_ROOT / "assets/css/styles.css").read_text(encoding="utf-8")
     expected_home_meta = (
         '<title>NatureWxLab｜データと経験を、自然と暮らす知恵へ</title>',
         '<meta name="description" content="NatureWxLabは、現役気象予報士の知識と実体験をもとに、気象データを自然のある暮らしに役立つ情報、無料ツール、記事、動画へ変えて届ける小さな研究拠点です。">',
@@ -300,9 +301,10 @@ def main() -> int:
         '<h3>気象データを読み解く</h3>',
         '<h3>自然の中で確かめる</h3>',
         '<h3>知恵をひらき、つなげる</h3>',
+        '<div class="section-heading tools-section-heading">',
         '<h2 id="tools-title" class="home-section-title"><span class="heading-line">“天気を味方につけた管理術”を、</span><span class="heading-line">誰でも使えるカタチに。</span></h2>',
-        '<p>園芸・農業やメダカ飼育をはじめ、自然との暮らしのなかでのお世話の判断に関わる意思決定支援ツールです。</p>',
-        '<p>植物もメダカも、屋外の生きものは、天気の影響を受けます。 「いつ動くか」「どう動くか」の判断は、ほぼすべて天気が決めていると言っても過言ではありません。だからこそ"天気を味方につけた管理術" を、誰でも使えるかたちにしました。</p>',
+        '<p>園芸・農業、メダカ飼育をはじめ、自然との暮らしの中で生まれる日々の管理判断を支える、4つの無料の意思決定支援ツールです。</p>',
+        '<p>植物もメダカも、屋外で育つ生きものは、天気の影響を大きく受けます。<br>「いつ動くか」「どう動くか」の判断は、気温や雨、日照、風などによって大きく左右されます。<br>だからこそ、“天気を味方につけた管理術” を、誰でも使えるかたちにしました。<br>一つの正解を決めるのではなく、自分の地域や環境に合わせて考えるための「共通のものさし」を目指しています。</p>',
     )
     for markup in expected_home_copy:
         if home_text.count(markup) != 1:
@@ -318,9 +320,22 @@ def main() -> int:
         "予報と観測、その差を地図で見ながら、天気・気温・雨・雪の分布を確認します。",
         "雨や天気のデータから、植物の乾燥・水やり・根腐れと、メダカ容器のあふれリスクを推定します。",
         "独自算出した全国陸域1km格子の気候平均と、気象庁の1か月・3か月予報による地域傾向を同じ場所で確認します。",
+        "ほぼすべて天気が決めていると言っても過言ではありません。",
+        "園芸・農業やメダカ飼育をはじめ、自然との暮らしのなかでのお世話の判断に関わる意思決定支援ツールです。",
+        "植物もメダカも、屋外の生きものは、天気の影響を受けます。",
+        "判断は、天気によって大きく左右されます。",
     ):
         if obsolete_copy in home_text:
             errors.append(f"index.html: obsolete home copy remains: {obsolete_copy}")
+
+    if not re.search(r"\.tools-section-heading\s*\{[^}]*\bmax-width:\s*none\s*;", styles_text, re.DOTALL):
+        errors.append("styles.css: PUBLIC TOOLS heading width override is missing")
+    if not re.search(
+        r'<section class="section" aria-labelledby="tools-title">\s*<div class="section-inner">\s*'
+        r'<div class="section-heading tools-section-heading">',
+        home_text,
+    ):
+        errors.append("index.html: PUBLIC TOOLS heading width class is not scoped to the tools section")
 
     expected_home_tool_descriptions = {
         "気温リスクナビ": "地点ごとに、過去30年の統計、現在や過去の観測値、2週間先までの見通しを、グラフ形式で確認できます。",

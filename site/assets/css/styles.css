@@ -346,6 +346,10 @@ main {
   text-align: center;
 }
 
+.tools-section-heading {
+  max-width: none;
+}
+
 .section-heading h2,
 .content-block h2 {
   margin: 0;
