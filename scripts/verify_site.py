@@ -267,7 +267,7 @@ def main() -> int:
     expected_brand_icon = '<img src="/assets/icons/naturewxlab-icon.png" width="54" height="54" alt="" aria-hidden="true">'
     expected_favicon = '<link rel="icon" href="/assets/icons/naturewxlab-icon.png" type="image/png">'
     expected_apple_touch = '<link rel="apple-touch-icon" href="/assets/icons/naturewxlab-icon.png">'
-    expected_stylesheet = '<link rel="stylesheet" href="/assets/css/styles.css?v=20260715-4">'
+    expected_stylesheet = '<link rel="stylesheet" href="/assets/css/styles.css?v=20260715-5">'
     for relative in HTML_FILES:
         text = relative.read_text(encoding="utf-8")
         page = relative.relative_to(SITE_ROOT)
@@ -279,9 +279,71 @@ def main() -> int:
             errors.append(f"{page}: current stylesheet version is missing or duplicated")
         if any(old_asset in text for old_asset in ("favicon.svg", "apple-touch-icon.png", "logo.svg")):
             errors.append(f"{page}: obsolete brand icon reference remains")
+    expected_footer = re.compile(
+        r'<footer class="site-footer">\s*<div class="footer-inner">\s*'
+        r'<div class="footer-compact">\s*<div class="footer-identity">\s*'
+        r'<div class="footer-brand">NatureWxLab</div>\s*'
+        r'<p>天気と自然を、毎日の判断につなぐ情報とツールを届けます。</p>\s*</div>\s*'
+        r'<div class="footer-meta">\s*<span>© 2026 NatureWxLab</span>\s*'
+        r'<button class="footer-link-button" type="button" data-analytics-settings>'
+        r'アクセス解析の設定</button>\s*</div>\s*</div>\s*</div>\s*</footer>',
+        re.DOTALL,
+    )
+    for relative in HTML_FILES:
+        text = relative.read_text(encoding="utf-8")
+        page = relative.relative_to(SITE_ROOT)
+        if len(expected_footer.findall(text)) != 1:
+            errors.append(f"{page}: compact footer is missing or duplicated")
+        if text.count("data-analytics-settings") != 1:
+            errors.append(f"{page}: analytics settings trigger must appear exactly once")
+        if any(obsolete_class in text for obsolete_class in ('class="footer-main"', 'class="footer-links"', 'class="footer-bottom"')):
+            errors.append(f"{page}: obsolete expanded footer structure remains")
     home_text = (SITE_ROOT / "index.html").read_text(encoding="utf-8")
     about_text = (SITE_ROOT / "about/index.html").read_text(encoding="utf-8")
     styles_text = (SITE_ROOT / "assets/css/styles.css").read_text(encoding="utf-8")
+    if not re.search(
+        r"\.site-footer\s*\{[^}]*\bpadding-block:\s*18px\s*;",
+        styles_text,
+        re.DOTALL,
+    ):
+        errors.append("styles.css: compact footer padding is missing")
+    if not re.search(
+        r"\.footer-compact\s*\{[^}]*\bdisplay:\s*grid\s*;[^}]*"
+        r"\bgrid-template-columns:\s*minmax\(0,\s*1fr\)\s+auto\s*;",
+        styles_text,
+        re.DOTALL,
+    ):
+        errors.append("styles.css: compact footer layout is missing")
+    if not re.search(
+        r"\.footer-meta\s*\{[^}]*\bdisplay:\s*flex\s*;[^}]*\bjustify-content:\s*flex-end\s*;",
+        styles_text,
+        re.DOTALL,
+    ):
+        errors.append("styles.css: compact footer metadata layout is missing")
+    if not re.search(
+        r"\.footer-brand\s*\{[^}]*\bline-height:\s*1\.3\s*;",
+        styles_text,
+        re.DOTALL,
+    ):
+        errors.append("styles.css: compact footer brand line height is missing")
+    if any(selector in styles_text for selector in (".footer-main", ".footer-links", ".footer-bottom")):
+        errors.append("styles.css: obsolete expanded footer selectors remain")
+    not_found_text = (SITE_ROOT / "404.html").read_text(encoding="utf-8")
+    if not re.search(r'<body class="not-found-page">', not_found_text):
+        errors.append("404.html: full-height page class is missing")
+    if not re.search(
+        r"\.not-found-page\s*\{[^}]*\bdisplay:\s*flex\s*;[^}]*\bmin-height:\s*100vh\s*;"
+        r"[^}]*\bflex-direction:\s*column\s*;",
+        styles_text,
+        re.DOTALL,
+    ):
+        errors.append("styles.css: full-height 404 page layout is missing")
+    if not re.search(
+        r"\.not-found-page\s+\.not-found\s*\{[^}]*\bmin-height:\s*0\s*;[^}]*\bflex:\s*1\s*;",
+        styles_text,
+        re.DOTALL,
+    ):
+        errors.append("styles.css: flexible 404 content layout is missing")
     expected_home_meta = (
         '<title>NatureWxLab｜データと経験を、自然と暮らす知恵へ</title>',
         '<meta name="description" content="NatureWxLabは、現役気象予報士の知識と実体験をもとに、気象データを自然のある暮らしに役立つ情報、無料ツール、記事、動画へ変えて届ける小さな研究拠点です。">',
@@ -410,6 +472,167 @@ def main() -> int:
         re.DOTALL,
     ):
         errors.append("styles.css: tools page desktop one-line intro rules are missing")
+
+    expected_tool_guide_intro = (
+        '<p class="eyebrow">HOW TO CHOOSE</p>',
+        '<h2 id="guide-title">「いつ」と「何を判断したいか」で、使い分ける。</h2>',
+        '<p>4つのツールは、判断の材料として役立つ情報がそれぞれ異なります。</p>',
+        '<p>一つの地点を深く見たいのか、周辺を含む地域を面で見たいのか。</p>',
+        '<p>過去から未来までの流れを追いたいのか、今日・明日の変化を知りたいのか。</p>',
+        '<p>「自分の地域や環境ならどうか」を判断するための根拠を提供します。</p>',
+    )
+    for markup in expected_tool_guide_intro:
+        if tools_text.count(markup) != 1:
+            errors.append(f"tools/index.html: required HOW TO CHOOSE intro is missing or duplicated: {markup}")
+    expected_guide_views = (
+        (
+            "guide-view-card point-view",
+            "POINT｜地点を深く見る",
+            "特定の地点に絞り、過去・現在・未来を同じ軸で重ねて詳しく見ます。",
+            "平年と今年の違いを確認し、植え付けや屋外管理などの作業時期を、具体的なスケジュールへ落とし込みやすくなります。",
+        ),
+        (
+            "guide-view-card area-view",
+            "AREA｜地域を面で見る",
+            "知りたい地域とその周辺を一緒に見て、分布と時間変化を把握します。",
+            "地域ごとの比較がしやすいだけでなく、雨域や高温域などの予測位置が少しずれた場合に、どうなりそうかも想定しやすくなります。",
+        ),
+    )
+    for card_class, heading, first_paragraph, second_paragraph in expected_guide_views:
+        view_pattern = re.compile(
+            rf'<article class="{re.escape(card_class)}">\s*<h3>{re.escape(heading)}</h3>\s*'
+            rf'<p>{re.escape(first_paragraph)}</p>\s*<p>{re.escape(second_paragraph)}</p>\s*</article>',
+            re.DOTALL,
+        )
+        if view_pattern.search(tools_text) is None:
+            errors.append(f"tools/index.html: HOW TO CHOOSE view card is invalid: {heading}")
+
+    expected_decision_cards = (
+        (
+            "point-tool",
+            "POINT｜地点",
+            "過去30年〜2週間先／年間の管理計画",
+            "植え付けや屋外管理の時期を、地点ごとに考えたい",
+            "気温リスクナビ",
+            "特定地点の過去30年の統計、過去の任意年、今年ここまでの観測値、2週間気温予報を一つのグラフに重ねます。",
+            "「平年ならいつ動くか」と「今年はどう進んでいるか」を見比べ、植え付け、屋外移行、遮光、取り込みなどの時期を考える材料にできます。",
+            "https://nature-wx-lab.github.io/temperature-risk-navi/",
+            "tool_temperature_risk",
+            "気温リスクナビを開く",
+        ),
+        (
+            "area-tool",
+            "AREA｜地域",
+            "過去1週間〜2日後",
+            "今日から明日、どこで何が変わるかを広く見たい",
+            "天気分布予報プラス",
+            "気象庁が別々に提供している予報と実況を一つの地図にまとめ、天気・気温・雨・雪の分布と時間変化を確認できます。",
+            "NatureWxLab独自の、予測値の前日差・平年差マップも使い、「今日こうだったから、明日はどう変わるか」を考えながら、予測域の位置が少しずれた場合の影響も想定しやすくします。",
+            "https://nature-wx-lab.github.io/weather-distribution-plus/",
+            "tool_weather_distribution",
+            "天気分布予報プラスを開く",
+        ),
+        (
+            "personal-tool",
+            "AREA＋PERSONAL｜地域＋個別条件",
+            "過去数日〜2週間先",
+            "雨を軸に、水やりタイミングや根腐れリスクを考えたい",
+            "うるおい管理ナビ β版",
+            "どのくらい雨が降ったか、これからどのくらい降りそうかを、周辺の分布も含めて確認できます。",
+            "地植え・鉢植え・畑、雨ざらしかどうか、土壌の種類など、自分の環境を設定することで、水やりのタイミング、長雨や多湿による根腐れ、屋外メダカ容器のあふれリスクを考えるための目安を示します。",
+            "https://nature-wx-lab.github.io/water_care/",
+            "tool_water_care",
+            "うるおい管理ナビ β版を開く",
+        ),
+        (
+            "climate-tool",
+            "AREA｜地域",
+            "過去30年〜3か月先",
+            "その土地の「いつも」と、この先の傾向を地域差ごと見たい",
+            "気候ものさしナビ β版",
+            "全国陸域1kmメッシュの気候平均をベースに、ここまでの気候の経過と最新の季節予報を重ねて、地図上で気候の全貌を把握できます。",
+            "自分の地域とその周辺、ほかの地域との違いを把握しながら、その土地の「いつもの気候」と「今年はどうなのか」を考える材料にできます。",
+            "https://nature-wx-lab.github.io/climate-outlook-navi/",
+            "tool_climate_outlook",
+            "気候ものさしナビ β版を開く",
+        ),
+    )
+    decision_positions: list[int] = []
+    for card_class, scope, period, purpose, tool_name, first_paragraph, second_paragraph, link_url, destination, link_label in expected_decision_cards:
+        decision_pattern = re.compile(
+            rf'<article class="decision-tool-card {re.escape(card_class)}">\s*'
+            rf'<div class="decision-tool-meta"><span class="decision-scope">{re.escape(scope)}</span>'
+            rf'<span class="decision-time">{re.escape(period)}</span></div>\s*'
+            rf'<p class="decision-purpose">{re.escape(purpose)}</p>\s*<h3>{re.escape(tool_name)}</h3>\s*'
+            rf'<p>{re.escape(first_paragraph)}</p>\s*<p>{re.escape(second_paragraph)}</p>\s*'
+            rf'<a class="button compact" href="{re.escape(link_url)}" '
+            rf'data-track-destination="{re.escape(destination)}">{re.escape(link_label)}</a>\s*</article>',
+            re.DOTALL,
+        )
+        match = decision_pattern.search(tools_text)
+        if match is None:
+            errors.append(f"tools/index.html: HOW TO CHOOSE decision card is invalid: {tool_name}")
+            decision_positions.append(-1)
+        else:
+            decision_positions.append(match.start())
+    if any(position < 0 for position in decision_positions) or decision_positions != sorted(decision_positions):
+        errors.append("tools/index.html: HOW TO CHOOSE decision cards must retain the specified order")
+
+    expected_tool_note = re.compile(
+        r'<aside class="tool-guide-note" aria-labelledby="tools-note-title">\s*'
+        r'<div class="tool-guide-note-title"><h2 id="tools-note-title">ご利用前に</h2></div>\s*'
+        r'<div class="tool-guide-note-copy">\s*'
+        r'<p>ツールによって、観測・予報・気候平均・独自推定を扱います。</p>\s*'
+        r'<p>表示結果は、日々の判断を助けるための目安です。</p>\s*'
+        r'<p>安全・健康・財産に関わる判断は、公的機関の最新情報と、実際の植物・土・水・容器の状態もあわせて確認してください。</p>\s*'
+        r'</div>\s*<a class="button secondary compact" href="/policy/#tools">ツール利用上の注意を見る</a>\s*</aside>',
+        re.DOTALL,
+    )
+    if len(expected_tool_note.findall(tools_text)) != 1:
+        errors.append("tools/index.html: HOW TO CHOOSE usage note is missing or duplicated")
+    for obsolete_copy in (
+        "時間軸で使い分ける",
+        "今と、この先を知りたい",
+        "植物やメダカの管理に結びたい",
+        "その場所の「いつも」を知りたい",
+        ">ツール利用上の注意</a>",
+        "「自分の地域や環境ならどうか」の判断をするため",
+        "地域ごとの比較がしやすいことの他にも",
+        "過去30年〜2週間先 or 年間計画",
+        "NatureWxLab独自の予測の前日差・平年差マップ",
+        "ここまで気候の経過",
+    ):
+        if obsolete_copy in tools_text:
+            errors.append(f"tools/index.html: obsolete HOW TO CHOOSE copy remains: {obsolete_copy}")
+    if not re.search(
+        r"\.guide-view-grid\s*,\s*\.decision-tool-grid\s*\{[^}]*\bdisplay:\s*grid\s*;[^}]*"
+        r"\bgrid-template-columns:\s*repeat\(2,\s*minmax\(0,\s*1fr\)\)\s*;",
+        styles_text,
+        re.DOTALL,
+    ):
+        errors.append("styles.css: HOW TO CHOOSE desktop two-column grids are missing")
+    if not re.search(
+        r"\.decision-tool-card\s*\{[^}]*\bdisplay:\s*flex\s*;[^}]*\bmin-height:\s*470px\s*;"
+        r"[^}]*\bborder-top:\s*4px\s+solid\s+var\(--decision-accent\)\s*;",
+        styles_text,
+        re.DOTALL,
+    ):
+        errors.append("styles.css: HOW TO CHOOSE decision card layout is missing")
+    if not re.search(
+        r"\.tool-guide-note\s*\{[^}]*\bdisplay:\s*grid\s*;[^}]*\bgrid-template-columns:\s*"
+        r"minmax\(140px,\s*0\.28fr\)\s+minmax\(0,\s*1fr\)\s+auto\s*;",
+        styles_text,
+        re.DOTALL,
+    ):
+        errors.append("styles.css: HOW TO CHOOSE full-width usage note layout is missing")
+    if not re.search(
+        r"@media\s*\(max-width:\s*880px\)(?:(?!@media).)*"
+        r"\.guide-view-grid\s*,\s*\.decision-tool-grid\s*,\s*\.tool-guide-note\s*\{[^}]*"
+        r"\bgrid-template-columns:\s*1fr\s*;",
+        styles_text,
+        re.DOTALL,
+    ):
+        errors.append("styles.css: HOW TO CHOOSE mobile one-column layout is missing")
 
     expected_about_meta = (
         '<title>NatureWxLabとは｜データと経験を、自然と暮らす知恵へ</title>',

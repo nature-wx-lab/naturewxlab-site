@@ -45,7 +45,7 @@ NATUREWXLAB_GA4_ID='専用測定ID' PYTHONDONTWRITEBYTECODE=1 python3 scripts/ve
 - YouTube：公式の[YouTubeブランドリソース](https://brand.youtube/youtube-icon/)で使用されている小型ソーシャルリンク用のYouTube Redマーク
 - メルカリ：公式の[ロゴ・アイコン利用規約](https://about.mercari.com/logo-terms/)に従い、[公式プレスキット](https://about.mercari.com/press/press-kit/mercari/)配布のサービスアイコンを無加工で使用
 
-Yahoo!オークションの公式ロゴ・サービスアイコンは、LINEヤフーの[ブランド資産利用ガイドライン](https://www.lycorp.co.jp/ja/company/trademarks/)上、事前承諾なしでは使用しません。承諾を得るまでは、ブランド資産ではない自作の汎用オークションマークと正式サービス名で識別します。
+Yahoo!オークションの公式ロゴ・サービスアイコンは、LINEヤフーの[ブランド資産利用ガイドライン](https://www.lycorp.co.jp/ja/company/trademarks/)上、事前承諾なしでは使用しません。現在は公式配布資産ではなく、黄色背景に太い黒字で `ヤフオク!` と組んだサイト内テキスト表現と正式サービス名で識別します。
 
 各ブランドマークの権利はそれぞれの権利者に帰属します。リンク先の識別以外には使用せず、提携・承認を示すものではありません。
 
