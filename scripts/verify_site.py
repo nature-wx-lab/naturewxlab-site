@@ -37,6 +37,10 @@ REQUIRED_FILES = {
     "assets/images/hero-family-garden-medaka-v2.png",
     "assets/images/og-image.jpg",
     "assets/images/og-image.svg",
+    "assets/images/tool-preview-climate-outlook-20260716.jpg",
+    "assets/images/tool-preview-temperature-risk-20260716.jpg",
+    "assets/images/tool-preview-water-care-20260716.jpg",
+    "assets/images/tool-preview-weather-distribution-20260716.jpg",
     "robots.txt",
     "sitemap.xml",
     "site.webmanifest",
@@ -128,6 +132,42 @@ def internal_target(href: str) -> Path | None:
     return candidate
 
 
+def jpeg_dimensions(payload: bytes) -> tuple[int, int] | None:
+    """Return JPEG width and height without adding an image-library dependency."""
+    if not payload.startswith(b"\xff\xd8"):
+        return None
+    offset = 2
+    sof_markers = {0xC0, 0xC1, 0xC2, 0xC3, 0xC5, 0xC6, 0xC7, 0xC9, 0xCA, 0xCB, 0xCD, 0xCE, 0xCF}
+    standalone_markers = {0x01, 0xD8, 0xD9, *range(0xD0, 0xD8)}
+    while offset + 4 <= len(payload):
+        if payload[offset] != 0xFF:
+            offset += 1
+            continue
+        while offset < len(payload) and payload[offset] == 0xFF:
+            offset += 1
+        if offset >= len(payload):
+            break
+        marker = payload[offset]
+        offset += 1
+        if marker in standalone_markers:
+            continue
+        if offset + 2 > len(payload):
+            break
+        segment_length = int.from_bytes(payload[offset : offset + 2], "big")
+        if segment_length < 2 or offset + segment_length > len(payload):
+            break
+        if marker in sof_markers:
+            if segment_length < 7:
+                return None
+            height = int.from_bytes(payload[offset + 3 : offset + 5], "big")
+            width = int.from_bytes(payload[offset + 5 : offset + 7], "big")
+            return width, height
+        if marker == 0xDA:
+            break
+        offset += segment_length
+    return None
+
+
 def main() -> int:
     errors: list[str] = []
     expected_measurement_id = os.environ.get("NATUREWXLAB_GA4_ID", "").strip()
@@ -148,11 +188,26 @@ def main() -> int:
         "assets/icons/social-youtube.svg": "0410b0414d8f8c5f413970592e0a11edb3e3293f0e8efdd20c7d74d16067dd8b",
         "assets/images/hero-family-garden-medaka-v2.png": "8e812c8d3e02afd15fa60fffcd65195940a1623c998e0ebc1a72842ae5462bc1",
         "assets/images/og-image.jpg": "9198c25cae29d01cdfaab1941c5095bad66627abd17003bedf6c04294e9ad35b",
+        "assets/images/tool-preview-climate-outlook-20260716.jpg": "036e25c730b6864b6b1d963e28ffa90b05fc83f981d0be0921ab999a3b745b6f",
+        "assets/images/tool-preview-temperature-risk-20260716.jpg": "3fb8f2c87de0ecb4e78b47fb27a88926d0b7f98104a46901c287a3642646e1bf",
+        "assets/images/tool-preview-water-care-20260716.jpg": "db56f994547e8745fdfb05f55312698c995f4652b86f7369b4fa64365b28c7b2",
+        "assets/images/tool-preview-weather-distribution-20260716.jpg": "49419fb547f5433be519e07343d3b362f474b9907187f7cf33aa37ab98190a04",
     }
     for relative, expected_sha256 in expected_asset_sha256.items():
         asset = SITE_ROOT / relative
         if asset.is_file() and hashlib.sha256(asset.read_bytes()).hexdigest() != expected_sha256:
             errors.append(f"{relative}: pinned asset bytes changed unexpectedly")
+
+    preview_images = tuple(relative for relative in expected_asset_sha256 if relative.startswith("assets/images/tool-preview-"))
+    for relative in preview_images:
+        asset = SITE_ROOT / relative
+        if not asset.is_file():
+            continue
+        payload = asset.read_bytes()
+        if not payload.startswith(b"\xff\xd8\xff"):
+            errors.append(f"{relative}: tool preview must be a JPEG file")
+        if jpeg_dimensions(payload) != (1425, 891):
+            errors.append(f"{relative}: tool preview dimensions must be 1425x891")
 
     safe_svg_files = (
         "assets/icons/service-auction.svg",
@@ -267,7 +322,7 @@ def main() -> int:
     expected_brand_icon = '<img src="/assets/icons/naturewxlab-icon.png" width="54" height="54" alt="" aria-hidden="true">'
     expected_favicon = '<link rel="icon" href="/assets/icons/naturewxlab-icon.png" type="image/png">'
     expected_apple_touch = '<link rel="apple-touch-icon" href="/assets/icons/naturewxlab-icon.png">'
-    expected_stylesheet = '<link rel="stylesheet" href="/assets/css/styles.css?v=20260715-7">'
+    expected_stylesheet = '<link rel="stylesheet" href="/assets/css/styles.css?v=20260716-1">'
     for relative in HTML_FILES:
         text = relative.read_text(encoding="utf-8")
         page = relative.relative_to(SITE_ROOT)
@@ -452,6 +507,72 @@ def main() -> int:
                 errors.append(f"{relative}: unexpected description for {tool_name}")
 
     tools_text = (SITE_ROOT / "tools/index.html").read_text(encoding="utf-8")
+    expected_tool_previews = (
+        (
+            "気温リスクナビ",
+            "/assets/images/tool-preview-temperature-risk-20260716.jpg",
+            "東京都の過去30年の日最低気温グラフを表示した気温リスクナビの初期画面",
+            expected_tool_descriptions["気温リスクナビ"],
+        ),
+        (
+            "天気分布予報プラス",
+            "/assets/images/tool-preview-weather-distribution-20260716.jpg",
+            "全国の最高気温予報を地図に表示した天気分布予報プラスの初期画面",
+            expected_tool_descriptions["天気分布予報プラス"],
+        ),
+        (
+            "うるおい管理ナビ",
+            "/assets/images/tool-preview-water-care-20260716.jpg",
+            "全国のうるおい残量マップを表示したうるおい管理ナビの初期画面",
+            expected_tool_descriptions["うるおい管理ナビ"],
+        ),
+        (
+            "気候ものさしナビ",
+            "/assets/images/tool-preview-climate-outlook-20260716.jpg",
+            "全国の7月平均気温と季節予報を表示した気候ものさしナビの初期画面",
+            expected_tool_descriptions["気候ものさしナビ"],
+        ),
+    )
+    if tools_text.count('<figure class="tool-preview">') != 4:
+        errors.append("tools/index.html: exactly four tool previews are required")
+    if home_text.count('<figure class="tool-preview">') != 0:
+        errors.append("index.html: tool previews must remain scoped to the public tools page")
+    preview_positions: list[int] = []
+    for tool_name, image_src, image_alt, description in expected_tool_previews:
+        preview_pattern = re.compile(
+            rf'<article class="tool-card">(?:(?!</article>).)*<h3>{re.escape(tool_name)}</h3>'
+            rf'(?:(?!</article>).)*<figure class="tool-preview">\s*'
+            rf'<img src="{re.escape(image_src)}" width="1425" height="891" '
+            rf'alt="{re.escape(image_alt)}" loading="lazy" decoding="async">\s*'
+            rf'<figcaption>初期表示例（2026年7月16日撮影）</figcaption>\s*</figure>\s*'
+            rf'<p>{re.escape(description)}</p>(?:(?!</article>).)*</article>',
+            re.DOTALL,
+        )
+        match = preview_pattern.search(tools_text)
+        if match is None:
+            errors.append(f"tools/index.html: preview structure or card association is invalid for {tool_name}")
+        else:
+            preview_positions.append(match.start())
+    if preview_positions != sorted(preview_positions) or len(preview_positions) != 4:
+        errors.append("tools/index.html: tool preview order must remain TOOL 01 through TOOL 04")
+    if not re.search(r"\.tool-preview\s*\{[^}]*\bmargin:\s*16px\s+0\s+0\s*;", styles_text, re.DOTALL):
+        errors.append("styles.css: tool preview spacing is missing")
+    if not re.search(
+        r"\.tool-preview\s+img\s*\{[^}]*\bdisplay:\s*block\s*;[^}]*"
+        r"\bwidth:\s*100%\s*;[^}]*\bheight:\s*auto\s*;[^}]*"
+        r"\bborder:\s*1px\s+solid\s+var\(--line\)\s*;[^}]*\bborder-radius:\s*6px\s*;",
+        styles_text,
+        re.DOTALL,
+    ):
+        errors.append("styles.css: uncropped responsive tool preview rules are missing")
+    if re.search(r"\.tool-preview\s+img\s*\{[^}]*\bobject-fit:\s*cover\s*;", styles_text, re.DOTALL):
+        errors.append("styles.css: tool preview images must not be cropped")
+    if not re.search(
+        r"\.tool-preview\s+figcaption\s*\{[^}]*\bfont-size:\s*12px\s*;[^}]*\bline-height:\s*1\.6\s*;",
+        styles_text,
+        re.DOTALL,
+    ):
+        errors.append("styles.css: tool preview caption styling is missing")
     expected_tools_intro = (
         '<p class="page-lede tools-page-lede">知りたい時間軸や目的に合わせて、4つのツールを使い分けられます。すべてブラウザから無料で利用できます。</p>',
         '<div class="section-heading tools-list-heading"><h2 id="tool-list-title">目的に合うツールを選ぶ</h2><p>各ツールは独立したページで公開しています。リンク先の出典、更新時刻、注意事項もあわせてご確認ください。</p></div>',

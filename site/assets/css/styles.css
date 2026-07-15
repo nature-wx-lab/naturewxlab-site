@@ -463,6 +463,25 @@ main {
   gap: 14px;
 }
 
+.tool-preview {
+  margin: 16px 0 0;
+}
+
+.tool-preview img {
+  display: block;
+  width: 100%;
+  height: auto;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+}
+
+.tool-preview figcaption {
+  margin-top: 7px;
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.6;
+}
+
 .tool-number {
   display: block;
   margin-bottom: 5px;
