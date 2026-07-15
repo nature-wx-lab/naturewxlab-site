@@ -503,7 +503,7 @@ main {
 
 .tool-guide-intro {
   display: grid;
-  max-width: 960px;
+  max-width: none;
   gap: 10px;
 }
 
@@ -528,20 +528,22 @@ main {
   line-height: 1.85;
 }
 
-.guide-view-grid,
-.decision-tool-grid {
+.tool-guide-layout {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 18px;
+  margin-top: 36px;
+  align-items: start;
+  grid-template-columns: minmax(0, 1.72fr) minmax(280px, 0.68fr);
+  gap: 38px;
+}
+
+.tool-guide-main {
+  min-width: 0;
 }
 
 .guide-view-grid {
-  margin-top: 36px;
-}
-
-.decision-tool-grid {
-  margin-top: 24px;
-  grid-auto-rows: 1fr;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px;
 }
 
 .guide-view-card {
@@ -578,32 +580,29 @@ main {
   line-height: 1.78;
 }
 
-.decision-tool-card {
-  --decision-accent: var(--sky);
-  --decision-tint: var(--sky-soft);
-  position: relative;
-  display: flex;
-  height: 100%;
-  min-height: 470px;
-  padding: 26px;
-  flex-direction: column;
-  border: 1px solid var(--line);
-  border-top: 4px solid var(--decision-accent);
-  border-radius: var(--radius);
-  background: var(--paper);
+.guide-explanation-list {
+  margin-top: 30px;
+  border-top: 1px solid var(--line);
 }
 
-.decision-tool-card.area-tool {
+.guide-explanation {
+  --decision-accent: var(--sky);
+  --decision-tint: var(--sky-soft);
+  padding: 28px 0 30px;
+  border-bottom: 1px solid var(--line);
+}
+
+.guide-explanation.area-tool {
   --decision-accent: var(--leaf);
   --decision-tint: var(--mist-strong);
 }
 
-.decision-tool-card.personal-tool {
+.guide-explanation.personal-tool {
   --decision-accent: var(--water);
   --decision-tint: #e4f2f2;
 }
 
-.decision-tool-card.climate-tool {
+.guide-explanation.climate-tool {
   --decision-accent: #9b6d14;
   --decision-tint: var(--sun-soft);
 }
@@ -637,7 +636,7 @@ main {
   font-weight: 800;
 }
 
-.decision-tool-card .decision-purpose {
+.guide-explanation .decision-purpose {
   margin: 17px 0 0;
   padding-left: 12px;
   border-left: 3px solid var(--decision-accent);
@@ -647,7 +646,7 @@ main {
   line-height: 1.65;
 }
 
-.decision-tool-card h3 {
+.guide-explanation h3 {
   margin: 20px 0 0;
   color: var(--ink);
   font-size: 1.5rem;
@@ -655,32 +654,23 @@ main {
   letter-spacing: -0.015em;
 }
 
-.decision-tool-card > p:not(.decision-purpose) {
+.guide-explanation > p:not(.decision-purpose) {
   margin: 11px 0 0;
   color: var(--muted);
   line-height: 1.82;
 }
 
-.decision-tool-card > p:last-of-type {
-  margin-bottom: 24px;
-}
-
-.decision-tool-card .button {
-  margin-top: auto;
-  align-self: flex-start;
-}
-
 .tool-guide-note {
+  position: sticky;
+  top: 94px;
   display: grid;
-  margin-top: 26px;
-  padding: 24px 26px;
-  align-items: center;
-  border: 1px solid #ead29c;
-  border-left: 4px solid var(--sun);
+  padding: 28px;
+  border: 1px solid var(--line);
+  border-top: 4px solid var(--sun);
   border-radius: var(--radius);
-  background: var(--sun-soft);
-  grid-template-columns: minmax(140px, 0.28fr) minmax(0, 1fr) auto;
-  gap: 20px 26px;
+  background: var(--paper);
+  box-shadow: 0 12px 32px rgba(28, 71, 59, 0.06);
+  gap: 18px;
 }
 
 .tool-guide-note h2 {
@@ -692,7 +682,7 @@ main {
 
 .tool-guide-note-copy {
   display: grid;
-  gap: 2px;
+  gap: 8px;
 }
 
 .tool-guide-note-copy p {
@@ -701,9 +691,10 @@ main {
   line-height: 1.75;
 }
 
-.tool-guide-note .button {
-  justify-self: end;
-  white-space: nowrap;
+.guide-note-link {
+  justify-self: start;
+  color: var(--leaf-dark);
+  font-weight: 800;
 }
 
 .link-grid {
@@ -1249,6 +1240,17 @@ main {
   }
 }
 
+@media (max-width: 1024px) {
+  .tool-guide-layout {
+    grid-template-columns: 1fr;
+    gap: 28px;
+  }
+
+  .tool-guide-note {
+    position: static;
+  }
+}
+
 @media (max-width: 880px) {
   .header-inner {
     min-height: auto;
@@ -1300,27 +1302,12 @@ main {
     grid-template-columns: 1fr;
   }
 
-  .guide-view-grid,
-  .decision-tool-grid,
-  .tool-guide-note {
+  .guide-view-grid {
     grid-template-columns: 1fr;
-  }
-
-  .decision-tool-card {
-    height: auto;
-    min-height: 0;
-  }
-
-  .decision-tool-grid {
-    grid-auto-rows: auto;
   }
 
   .tool-guide-note {
     align-items: start;
-  }
-
-  .tool-guide-note .button {
-    justify-self: start;
   }
 
   .vision-panel .section-actions,
@@ -1430,9 +1417,12 @@ main {
   }
 
   .guide-view-card,
-  .decision-tool-card,
   .tool-guide-note {
     padding: 20px;
+  }
+
+  .guide-explanation {
+    padding: 24px 0 26px;
   }
 
   .tool-guide-intro h2 {
@@ -1442,11 +1432,6 @@ main {
   .decision-tool-meta {
     align-items: flex-start;
     flex-direction: column;
-  }
-
-  .decision-tool-card .button,
-  .tool-guide-note .button {
-    width: 100%;
   }
 
   .vision-panel {

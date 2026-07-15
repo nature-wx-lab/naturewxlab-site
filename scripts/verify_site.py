@@ -267,7 +267,7 @@ def main() -> int:
     expected_brand_icon = '<img src="/assets/icons/naturewxlab-icon.png" width="54" height="54" alt="" aria-hidden="true">'
     expected_favicon = '<link rel="icon" href="/assets/icons/naturewxlab-icon.png" type="image/png">'
     expected_apple_touch = '<link rel="apple-touch-icon" href="/assets/icons/naturewxlab-icon.png">'
-    expected_stylesheet = '<link rel="stylesheet" href="/assets/css/styles.css?v=20260715-5">'
+    expected_stylesheet = '<link rel="stylesheet" href="/assets/css/styles.css?v=20260715-7">'
     for relative in HTML_FILES:
         text = relative.read_text(encoding="utf-8")
         page = relative.relative_to(SITE_ROOT)
@@ -484,6 +484,8 @@ def main() -> int:
     for markup in expected_tool_guide_intro:
         if tools_text.count(markup) != 1:
             errors.append(f"tools/index.html: required HOW TO CHOOSE intro is missing or duplicated: {markup}")
+    if not re.search(r"\.tool-guide-intro\s*\{[^}]*\bmax-width:\s*none\s*;", styles_text, re.DOTALL):
+        errors.append("styles.css: HOW TO CHOOSE intro must use the full section width")
     expected_guide_views = (
         (
             "guide-view-card point-view",
@@ -507,7 +509,7 @@ def main() -> int:
         if view_pattern.search(tools_text) is None:
             errors.append(f"tools/index.html: HOW TO CHOOSE view card is invalid: {heading}")
 
-    expected_decision_cards = (
+    expected_guide_explanations = (
         (
             "point-tool",
             "POINT｜地点",
@@ -516,9 +518,6 @@ def main() -> int:
             "気温リスクナビ",
             "特定地点の過去30年の統計、過去の任意年、今年ここまでの観測値、2週間気温予報を一つのグラフに重ねます。",
             "「平年ならいつ動くか」と「今年はどう進んでいるか」を見比べ、植え付け、屋外移行、遮光、取り込みなどの時期を考える材料にできます。",
-            "https://nature-wx-lab.github.io/temperature-risk-navi/",
-            "tool_temperature_risk",
-            "気温リスクナビを開く",
         ),
         (
             "area-tool",
@@ -528,9 +527,6 @@ def main() -> int:
             "天気分布予報プラス",
             "気象庁が別々に提供している予報と実況を一つの地図にまとめ、天気・気温・雨・雪の分布と時間変化を確認できます。",
             "NatureWxLab独自の、予測値の前日差・平年差マップも使い、「今日こうだったから、明日はどう変わるか」を考えながら、予測域の位置が少しずれた場合の影響も想定しやすくします。",
-            "https://nature-wx-lab.github.io/weather-distribution-plus/",
-            "tool_weather_distribution",
-            "天気分布予報プラスを開く",
         ),
         (
             "personal-tool",
@@ -540,9 +536,6 @@ def main() -> int:
             "うるおい管理ナビ β版",
             "どのくらい雨が降ったか、これからどのくらい降りそうかを、周辺の分布も含めて確認できます。",
             "地植え・鉢植え・畑、雨ざらしかどうか、土壌の種類など、自分の環境を設定することで、水やりのタイミング、長雨や多湿による根腐れ、屋外メダカ容器のあふれリスクを考えるための目安を示します。",
-            "https://nature-wx-lab.github.io/water_care/",
-            "tool_water_care",
-            "うるおい管理ナビ β版を開く",
         ),
         (
             "climate-tool",
@@ -552,40 +545,47 @@ def main() -> int:
             "気候ものさしナビ β版",
             "全国陸域1kmメッシュの気候平均をベースに、ここまでの気候の経過と最新の季節予報を重ねて、地図上で気候の全貌を把握できます。",
             "自分の地域とその周辺、ほかの地域との違いを把握しながら、その土地の「いつもの気候」と「今年はどうなのか」を考える材料にできます。",
-            "https://nature-wx-lab.github.io/climate-outlook-navi/",
-            "tool_climate_outlook",
-            "気候ものさしナビ β版を開く",
         ),
     )
-    decision_positions: list[int] = []
-    for card_class, scope, period, purpose, tool_name, first_paragraph, second_paragraph, link_url, destination, link_label in expected_decision_cards:
-        decision_pattern = re.compile(
-            rf'<article class="decision-tool-card {re.escape(card_class)}">\s*'
+    explanation_positions: list[int] = []
+    for explanation_class, scope, period, purpose, tool_name, first_paragraph, second_paragraph in expected_guide_explanations:
+        explanation_pattern = re.compile(
+            rf'<article class="guide-explanation {re.escape(explanation_class)}">\s*'
             rf'<div class="decision-tool-meta"><span class="decision-scope">{re.escape(scope)}</span>'
             rf'<span class="decision-time">{re.escape(period)}</span></div>\s*'
             rf'<p class="decision-purpose">{re.escape(purpose)}</p>\s*<h3>{re.escape(tool_name)}</h3>\s*'
-            rf'<p>{re.escape(first_paragraph)}</p>\s*<p>{re.escape(second_paragraph)}</p>\s*'
-            rf'<a class="button compact" href="{re.escape(link_url)}" '
-            rf'data-track-destination="{re.escape(destination)}">{re.escape(link_label)}</a>\s*</article>',
+            rf'<p>{re.escape(first_paragraph)}</p>\s*<p>{re.escape(second_paragraph)}</p>\s*</article>',
             re.DOTALL,
         )
-        match = decision_pattern.search(tools_text)
+        match = explanation_pattern.search(tools_text)
         if match is None:
-            errors.append(f"tools/index.html: HOW TO CHOOSE decision card is invalid: {tool_name}")
-            decision_positions.append(-1)
+            errors.append(f"tools/index.html: HOW TO CHOOSE explanation is invalid: {tool_name}")
+            explanation_positions.append(-1)
         else:
-            decision_positions.append(match.start())
-    if any(position < 0 for position in decision_positions) or decision_positions != sorted(decision_positions):
-        errors.append("tools/index.html: HOW TO CHOOSE decision cards must retain the specified order")
+            explanation_positions.append(match.start())
+    if any(position < 0 for position in explanation_positions) or explanation_positions != sorted(explanation_positions):
+        errors.append("tools/index.html: HOW TO CHOOSE explanations must retain the specified order")
+
+    guide_section_match = re.search(
+        r'<section class="section white tool-guide-section"[^>]*>(.*?)</section>\s*</main>',
+        tools_text,
+        re.DOTALL,
+    )
+    if guide_section_match is None:
+        errors.append("tools/index.html: HOW TO CHOOSE section is missing")
+    else:
+        guide_section_html = guide_section_match.group(1)
+        if "data-track-destination" in guide_section_html or "https://nature-wx-lab.github.io/" in guide_section_html:
+            errors.append("tools/index.html: HOW TO CHOOSE must not duplicate the four tool links")
 
     expected_tool_note = re.compile(
         r'<aside class="tool-guide-note" aria-labelledby="tools-note-title">\s*'
-        r'<div class="tool-guide-note-title"><h2 id="tools-note-title">ご利用前に</h2></div>\s*'
+        r'<h2 id="tools-note-title">ご利用前に</h2>\s*'
         r'<div class="tool-guide-note-copy">\s*'
         r'<p>ツールによって、観測・予報・気候平均・独自推定を扱います。</p>\s*'
         r'<p>表示結果は、日々の判断を助けるための目安です。</p>\s*'
         r'<p>安全・健康・財産に関わる判断は、公的機関の最新情報と、実際の植物・土・水・容器の状態もあわせて確認してください。</p>\s*'
-        r'</div>\s*<a class="button secondary compact" href="/policy/#tools">ツール利用上の注意を見る</a>\s*</aside>',
+        r'</div>\s*<a class="guide-note-link" href="/policy/#tools">ツール利用上の注意を見る</a>\s*</aside>',
         re.DOTALL,
     )
     if len(expected_tool_note.findall(tools_text)) != 1:
@@ -605,30 +605,48 @@ def main() -> int:
         if obsolete_copy in tools_text:
             errors.append(f"tools/index.html: obsolete HOW TO CHOOSE copy remains: {obsolete_copy}")
     if not re.search(
-        r"\.guide-view-grid\s*,\s*\.decision-tool-grid\s*\{[^}]*\bdisplay:\s*grid\s*;[^}]*"
+        r"\.tool-guide-layout\s*\{[^}]*\bdisplay:\s*grid\s*;[^}]*\bgrid-template-columns:\s*"
+        r"minmax\(0,\s*1\.72fr\)\s+minmax\(280px,\s*0\.68fr\)\s*;",
+        styles_text,
+        re.DOTALL,
+    ):
+        errors.append("styles.css: HOW TO CHOOSE explanation and note columns are missing")
+    if not re.search(
+        r"\.guide-view-grid\s*\{[^}]*\bdisplay:\s*grid\s*;[^}]*"
         r"\bgrid-template-columns:\s*repeat\(2,\s*minmax\(0,\s*1fr\)\)\s*;",
         styles_text,
         re.DOTALL,
     ):
-        errors.append("styles.css: HOW TO CHOOSE desktop two-column grids are missing")
+        errors.append("styles.css: HOW TO CHOOSE point and area comparison is missing")
     if not re.search(
-        r"\.decision-tool-card\s*\{[^}]*\bdisplay:\s*flex\s*;[^}]*\bmin-height:\s*470px\s*;"
-        r"[^}]*\bborder-top:\s*4px\s+solid\s+var\(--decision-accent\)\s*;",
+        r"\.guide-explanation-list\s*\{[^}]*\bborder-top:\s*1px\s+solid\s+var\(--line\)\s*;",
+        styles_text,
+        re.DOTALL,
+    ) or not re.search(
+        r"\.guide-explanation\s*\{[^}]*\bborder-bottom:\s*1px\s+solid\s+var\(--line\)\s*;",
         styles_text,
         re.DOTALL,
     ):
-        errors.append("styles.css: HOW TO CHOOSE decision card layout is missing")
+        errors.append("styles.css: HOW TO CHOOSE explanatory rows are missing")
     if not re.search(
-        r"\.tool-guide-note\s*\{[^}]*\bdisplay:\s*grid\s*;[^}]*\bgrid-template-columns:\s*"
-        r"minmax\(140px,\s*0\.28fr\)\s+minmax\(0,\s*1fr\)\s+auto\s*;",
+        r"\.tool-guide-note\s*\{[^}]*\bposition:\s*sticky\s*;[^}]*\bdisplay:\s*grid\s*;",
         styles_text,
         re.DOTALL,
     ):
-        errors.append("styles.css: HOW TO CHOOSE full-width usage note layout is missing")
+        errors.append("styles.css: HOW TO CHOOSE side note layout is missing")
     if not re.search(
+        r"@media\s*\(max-width:\s*1024px\)(?:(?!@media).)*"
+        r"\.tool-guide-layout\s*\{[^}]*\bgrid-template-columns:\s*1fr\s*;",
+        styles_text,
+        re.DOTALL,
+    ) or not re.search(
+        r"@media\s*\(max-width:\s*1024px\)(?:(?!@media).)*"
+        r"\.tool-guide-note\s*\{[^}]*\bposition:\s*static\s*;",
+        styles_text,
+        re.DOTALL,
+    ) or not re.search(
         r"@media\s*\(max-width:\s*880px\)(?:(?!@media).)*"
-        r"\.guide-view-grid\s*,\s*\.decision-tool-grid\s*,\s*\.tool-guide-note\s*\{[^}]*"
-        r"\bgrid-template-columns:\s*1fr\s*;",
+        r"\.guide-view-grid\s*\{[^}]*\bgrid-template-columns:\s*1fr\s*;",
         styles_text,
         re.DOTALL,
     ):
