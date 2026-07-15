@@ -267,7 +267,7 @@ def main() -> int:
     expected_brand_icon = '<img src="/assets/icons/naturewxlab-icon.png" width="54" height="54" alt="" aria-hidden="true">'
     expected_favicon = '<link rel="icon" href="/assets/icons/naturewxlab-icon.png" type="image/png">'
     expected_apple_touch = '<link rel="apple-touch-icon" href="/assets/icons/naturewxlab-icon.png">'
-    expected_stylesheet = '<link rel="stylesheet" href="/assets/css/styles.css?v=20260715-3">'
+    expected_stylesheet = '<link rel="stylesheet" href="/assets/css/styles.css?v=20260715-4">'
     for relative in HTML_FILES:
         text = relative.read_text(encoding="utf-8")
         page = relative.relative_to(SITE_ROOT)
@@ -307,6 +307,9 @@ def main() -> int:
         '<h2 id="tools-title" class="home-section-title"><span class="heading-line">“天気を味方につけた管理術”を、</span><span class="heading-line">誰でも使えるカタチに。</span></h2>',
         '<p>園芸・農業、メダカ飼育をはじめ、自然との暮らしの中で生まれる日々の管理判断を支える、4つの無料の意思決定支援ツールです。</p>',
         '<p>植物もメダカも、屋外で育つ生きものは、天気の影響を大きく受けます。<br>「いつ動くか」「どう動くか」の判断は、気温や雨、日照、風などによって大きく左右されます。<br>だからこそ、“天気を味方につけた管理術” を、誰でも使えるかたちにしました。<br>一つの正解を決めるのではなく、自分の地域や環境に合わせて考えるための「共通のものさし」を目指しています。</p>',
+        '<p class="eyebrow">MEDIA &amp; UPDATES</p>',
+        '<h2 id="content-title" class="home-section-title">媒体ごとに、いちばん伝わるかたちで。</h2>',
+        '<p>公式HPを入口に、伝えたい内容に合わせて4つの媒体を使い分けています。</p>',
     )
     for markup in expected_home_copy:
         if home_text.count(markup) != 1:
@@ -327,6 +330,17 @@ def main() -> int:
         "植物もメダカも、屋外の生きものは、天気の影響を受けます。",
         "判断は、天気によって大きく左右されます。",
         "知恵をひらく。",
+        "ARTICLES &amp; UPDATES",
+        "記事・動画・日々の発信",
+        "公式HPを入口に、詳しい解説や日々の更新はそれぞれの媒体で届けます。",
+        "ツールの使い方や自然との向き合い方を、実演や検証を交えて紹介します。",
+        "天気や自然、園芸、メダカ、公開ツールの背景を、文章で深く掘り下げます。",
+        "日々の気象・自然情報と、記事やツールの更新を短くお知らせします。",
+        "園芸、メダカ、自然観察の写真や短い動画を通して、日々の実践を紹介します。",
+        ">YouTubeを見る</a>",
+        ">noteを読む</a>",
+        ">Xの投稿を見る</a>",
+        ">Instagramを見る</a>",
     ):
         if obsolete_copy in home_text:
             errors.append(f"index.html: obsolete home copy remains: {obsolete_copy}")
@@ -358,20 +372,44 @@ def main() -> int:
     ):
         errors.append("index.html: PUBLIC TOOLS heading width class is not scoped to the tools section")
 
-    expected_home_tool_descriptions = {
+    expected_tool_descriptions = {
         "気温リスクナビ": "地点ごとに、過去30年の統計、現在や過去の観測値、2週間先までの見通しを、グラフ形式で確認できます。",
         "天気分布予報プラス": "気象庁の予測と実況を地図で表現し、それらの平年差や前日差なども含めて、天気分布の過去・現在・未来の詳細を把握できます。",
         "うるおい管理ナビ": "雨の予報と観測データから、植物の水やりタイミング・根腐れリスクと、屋外メダカ容器のあふれリスクを推定できます。",
         "気候ものさしナビ": "独自算出した全国1kmメッシュの気候平均と、気象庁の最新の季節予報や観測データを組み合わせて、その土地の気候のすべてを把握できます。",
     }
-    for tool_name, description in expected_home_tool_descriptions.items():
-        description_pattern = re.compile(
-            rf'<article class="tool-card">(?:(?!</article>).)*<h3>{re.escape(tool_name)}</h3>'
-            rf'(?:(?!</article>).)*<p>{re.escape(description)}</p>(?:(?!</article>).)*</article>',
-            re.DOTALL,
-        )
-        if not description_pattern.search(home_text):
-            errors.append(f"index.html: unexpected home description for {tool_name}")
+    for relative in (Path("index.html"), Path("tools/index.html")):
+        page_text = (SITE_ROOT / relative).read_text(encoding="utf-8")
+        for tool_name, description in expected_tool_descriptions.items():
+            description_pattern = re.compile(
+                rf'<article class="tool-card">(?:(?!</article>).)*<h3>{re.escape(tool_name)}</h3>'
+                rf'(?:(?!</article>).)*<p>{re.escape(description)}</p>(?:(?!</article>).)*</article>',
+                re.DOTALL,
+            )
+            if not description_pattern.search(page_text):
+                errors.append(f"{relative}: unexpected description for {tool_name}")
+
+    tools_text = (SITE_ROOT / "tools/index.html").read_text(encoding="utf-8")
+    expected_tools_intro = (
+        '<p class="page-lede tools-page-lede">知りたい時間軸や目的に合わせて、4つのツールを使い分けられます。すべてブラウザから無料で利用できます。</p>',
+        '<div class="section-heading tools-list-heading"><h2 id="tool-list-title">目的に合うツールを選ぶ</h2><p>各ツールは独立したページで公開しています。リンク先の出典、更新時刻、注意事項もあわせてご確認ください。</p></div>',
+    )
+    for markup in expected_tools_intro:
+        if tools_text.count(markup) != 1:
+            errors.append(f"tools/index.html: required full-width tools intro is missing or duplicated: {markup}")
+    if not re.search(
+        r"\.tools-page-lede\s*,\s*\.tools-list-heading\s*\{[^}]*\bmax-width:\s*none\s*;",
+        styles_text,
+        re.DOTALL,
+    ):
+        errors.append("styles.css: tools page full-width intro rules are missing")
+    if not re.search(
+        r"@media\s*\(min-width:\s*1160px\)(?:(?!@media).)*"
+        r"\.tools-page-lede\s*,\s*\.tools-list-heading\s*>\s*p\s*\{[^}]*\bwhite-space:\s*nowrap\s*;",
+        styles_text,
+        re.DOTALL,
+    ):
+        errors.append("styles.css: tools page desktop one-line intro rules are missing")
 
     expected_about_meta = (
         '<title>NatureWxLabとは｜データと経験を、自然と暮らす知恵へ</title>',
@@ -424,7 +462,7 @@ def main() -> int:
         errors.append("index.html: supplied family garden hero image is missing or duplicated")
     if "hero-weather-nature-v2" in home_text or "hero-family-garden-medaka.jpg" in home_text:
         errors.append("index.html: obsolete hero image reference remains")
-    expected_instagram = '<a href="https://www.instagram.com/nature_wx_lab/" data-track-destination="media_instagram">Instagramを見る</a>'
+    expected_instagram = '<a href="https://www.instagram.com/nature_wx_lab/" data-track-destination="media_instagram">Instagramで写真・動画を見る</a>'
     if home_text.count(expected_instagram) != 1:
         errors.append("index.html: official Instagram link is missing or duplicated")
     expected_social_icons = {
@@ -437,16 +475,49 @@ def main() -> int:
         if home_text.count(markup) != 1:
             errors.append(f"index.html: official {service} mark is missing or duplicated")
     expected_media_cards = (
-        ("YouTube", expected_social_icons["YouTube"], "https://www.youtube.com/@nature_wx_lab", "media_youtube", "YouTubeを見る"),
-        ("note", expected_social_icons["note"], "https://note.com/nature_wx_lab", "media_note", "noteを読む"),
-        ("X", expected_social_icons["X"], "https://x.com/nature_wx_lab", "media_x", "Xの投稿を見る"),
-        ("Instagram", expected_social_icons["Instagram"], "https://www.instagram.com/nature_wx_lab/", "media_instagram", "Instagramを見る"),
+        (
+            "YouTube",
+            expected_social_icons["YouTube"],
+            "実演・ハウツー",
+            "植物やメダカのお世話、イベント参加報告など、動画だからこそ伝わる動きや変化、魅力などを、実演・比較・観察などを交えて紹介します。",
+            "https://www.youtube.com/@nature_wx_lab",
+            "media_youtube",
+            "YouTubeで動画を見る",
+        ),
+        (
+            "note",
+            expected_social_icons["note"],
+            "深掘り・解説",
+            "Xなどの短い投稿では伝えきれない、天気・園芸・メダカ・公開ツールの背景や仕組み、判断の根拠まで文章でじっくり掘り下げます。",
+            "https://note.com/nature_wx_lab",
+            "media_note",
+            "noteで詳しく読む",
+        ),
+        (
+            "X",
+            expected_social_icons["X"],
+            "速報・日々の更新",
+            "いま伝えるべき、天気を味方につけたお世話のコツや各地のお花の見頃や各種イベント情報などを短くタイムリーに届けます。",
+            "https://x.com/nature_wx_lab",
+            "media_x",
+            "Xで最新情報を見る",
+        ),
+        (
+            "Instagram",
+            expected_social_icons["Instagram"],
+            "写真・短い動画",
+            "私の庭で咲いた花や育てているメダカを、写真と短い動画で紹介します。販売するメダカは、泳ぎ方や体色を購入前に確認できる動画も掲載します。",
+            "https://www.instagram.com/nature_wx_lab/",
+            "media_instagram",
+            "Instagramで写真・動画を見る",
+        ),
     )
     media_positions: list[int] = []
-    for service, icon_markup, link_url, destination, link_label in expected_media_cards:
+    for service, icon_markup, role, description, link_url, destination, link_label in expected_media_cards:
         card_pattern = re.compile(
             rf'<article class="link-card">\s*{re.escape(icon_markup)}\s*<h3>{re.escape(service)}</h3>'
-            rf'(?:(?!</article>).)*<a href="{re.escape(link_url)}" '
+            rf'\s*<span class="media-role">{re.escape(role)}</span>\s*<p>{re.escape(description)}</p>\s*'
+            rf'<a href="{re.escape(link_url)}" '
             rf'data-track-destination="{destination}">{re.escape(link_label)}</a>\s*</article>',
             re.DOTALL,
         )
@@ -466,28 +537,69 @@ def main() -> int:
     )
     if any(markup in home_text for markup in obsolete_social_icons):
         errors.append("index.html: obsolete text-only social mark remains")
+    if '<div class="link-grid media-grid">' not in home_text:
+        errors.append("index.html: media cards are not scoped to the responsive media grid")
+    if not re.search(
+        r"\.media-grid\s*\{[^}]*\bgrid-auto-rows:\s*1fr\s*;",
+        styles_text,
+        re.DOTALL,
+    ):
+        errors.append("styles.css: equal-height media grid rows are missing")
+    if not re.search(
+        r"\.media-role\s*\{[^}]*\bdisplay:\s*inline-flex\s*;[^}]*\bborder-radius:\s*999px\s*;"
+        r"[^}]*\bfont-weight:\s*800\s*;[^}]*\bwhite-space:\s*nowrap\s*;",
+        styles_text,
+        re.DOTALL,
+    ):
+        errors.append("styles.css: media role pill styling is missing")
+    if not re.search(
+        r"@media\s*\(max-width:\s*1099px\)\s*\{\s*\.media-grid\s*\{[^}]*"
+        r"grid-template-columns:\s*repeat\(2,\s*minmax\(0,\s*1fr\)\)\s*;",
+        styles_text,
+        re.DOTALL,
+    ):
+        errors.append("styles.css: media grid tablet two-column rule is missing")
+    if not re.search(
+        r"\.link-card\s+a\s*\{[^}]*\bmargin-top:\s*auto\s*;",
+        styles_text,
+        re.DOTALL,
+    ):
+        errors.append("styles.css: link-card CTA bottom alignment rule is missing")
     expected_mercari_icon = '<span class="service-mark mercari" aria-hidden="true"><img src="/assets/icons/service-mercari.png" width="42" height="42" alt=""></span>'
     if home_text.count(expected_mercari_icon) != 1:
         errors.append("index.html: official Mercari service icon is missing or duplicated")
     if '<span class="service-mark" aria-hidden="true">M</span>' in home_text:
         errors.append("index.html: obsolete text-only Mercari mark remains")
-    expected_auction_icon = '<span class="service-mark auction" aria-hidden="true"><img src="/assets/icons/service-auction.svg" width="24" height="24" alt=""></span>'
+    expected_auction_icon = '<span class="service-mark auction" aria-hidden="true"><span class="auction-wordmark">ヤフオク!</span></span>'
     expected_auction_name = '<h3>Yahoo!オークション</h3>'
+    expected_auction_description = '<p>メダカの出品情報をご覧いただけます。</p>'
     expected_auction_link = '>Yahoo!オークションの出品を見る</a>'
     if home_text.count(expected_auction_icon) != 1:
-        errors.append("index.html: neutral auction mark is missing or duplicated")
-    if home_text.count(expected_auction_name) != 1 or home_text.count(expected_auction_link) != 1:
+        errors.append("index.html: custom Yahoo! Auctions wordmark is missing or duplicated")
+    if (
+        home_text.count(expected_auction_name) != 1
+        or home_text.count(expected_auction_description) != 1
+        or home_text.count(expected_auction_link) != 1
+    ):
         errors.append("index.html: current Yahoo! Auctions service name is missing or duplicated")
-    if '<span class="service-mark" aria-hidden="true">Y!</span>' in home_text:
-        errors.append("index.html: unauthorized text-only Yahoo brand mark remains")
+    if '<img src="/assets/icons/service-auction.svg"' in home_text:
+        errors.append("index.html: obsolete neutral auction gavel remains")
+    if "メダカや植物などの出品情報をご覧いただけます。" in home_text:
+        errors.append("index.html: obsolete Yahoo! Auctions description remains")
+    if not re.search(
+        r"\.service-mark\.auction\s*\{[^}]*\bbackground:\s*#ffdc48\s*;[^}]*\bcolor:\s*#202020\s*;",
+        styles_text,
+        re.DOTALL,
+    ):
+        errors.append("styles.css: yellow and black Yahoo! Auctions badge styling is missing")
     expected_sales_cards = (
-        (expected_mercari_icon, "メルカリ", "https://jp.mercari.com/user/profile/474428763", "sales_mercari", "メルカリの出品を見る"),
-        (expected_auction_icon, "Yahoo!オークション", "https://auctions.yahoo.co.jp/seller/2Nn3kZv4J22cbfTSoVYSVRRp2M6Ao?user_type=c", "sales_yahoo_auctions", "Yahoo!オークションの出品を見る"),
+        (expected_mercari_icon, "メルカリ", "植物などの出品情報をご覧いただけます。", "https://jp.mercari.com/user/profile/474428763", "sales_mercari", "メルカリの出品を見る"),
+        (expected_auction_icon, "Yahoo!オークション", "メダカの出品情報をご覧いただけます。", "https://auctions.yahoo.co.jp/seller/2Nn3kZv4J22cbfTSoVYSVRRp2M6Ao?user_type=c", "sales_yahoo_auctions", "Yahoo!オークションの出品を見る"),
     )
-    for icon_markup, service, link_url, destination, link_label in expected_sales_cards:
+    for icon_markup, service, description, link_url, destination, link_label in expected_sales_cards:
         card_pattern = re.compile(
             rf'<article class="link-card">\s*{re.escape(icon_markup)}\s*<h3>{re.escape(service)}</h3>'
-            rf'(?:(?!</article>).)*<a href="{re.escape(link_url)}" '
+            rf'\s*<p>{re.escape(description)}</p>\s*<a href="{re.escape(link_url)}" '
             rf'data-track-destination="{destination}">{re.escape(link_label)}</a>\s*</article>',
             re.DOTALL,
         )
