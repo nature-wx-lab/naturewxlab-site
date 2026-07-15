@@ -322,7 +322,7 @@ def main() -> int:
     expected_brand_icon = '<img src="/assets/icons/naturewxlab-icon.png" width="54" height="54" alt="" aria-hidden="true">'
     expected_favicon = '<link rel="icon" href="/assets/icons/naturewxlab-icon.png" type="image/png">'
     expected_apple_touch = '<link rel="apple-touch-icon" href="/assets/icons/naturewxlab-icon.png">'
-    expected_stylesheet = '<link rel="stylesheet" href="/assets/css/styles.css?v=20260716-1">'
+    expected_stylesheet = '<link rel="stylesheet" href="/assets/css/styles.css?v=20260716-2">'
     for relative in HTML_FILES:
         text = relative.read_text(encoding="utf-8")
         page = relative.relative_to(SITE_ROOT)
@@ -355,6 +355,8 @@ def main() -> int:
             errors.append(f"{page}: obsolete expanded footer structure remains")
     home_text = (SITE_ROOT / "index.html").read_text(encoding="utf-8")
     about_text = (SITE_ROOT / "about/index.html").read_text(encoding="utf-8")
+    vision_text = (SITE_ROOT / "vision/index.html").read_text(encoding="utf-8")
+    policy_text = (SITE_ROOT / "policy/index.html").read_text(encoding="utf-8")
     styles_text = (SITE_ROOT / "assets/css/styles.css").read_text(encoding="utf-8")
     if not re.search(
         r"\.site-footer\s*\{[^}]*\bpadding-block:\s*18px\s*;",
@@ -787,7 +789,10 @@ def main() -> int:
     expected_about_copy = (
         '<p class="eyebrow">ABOUT NATUREWXLAB</p>',
         '<h1><span class="heading-line">一人の気象予報士から始まり、</span><span class="heading-line">知恵がつながる場所へ。</span></h1>',
-        "個人で運営している小さな研究拠点です。",
+        '<p>NatureWxLabは、気象情報の現場で働く現役気象予報士が、個人で運営している小さな研究拠点です。</p>',
+        '<p>気象データ、家庭での園芸やメダカ飼育、親子での自然観察、そしてAIとの協働から生まれた発見を、自然のある暮らしに役立つ形で届けています。</p>',
+        '<p>今は、一人でこの場所を育てています。けれど、目指しているのは、一人の答えを発信するだけの場所ではありません。</p>',
+        '<p>地域も環境も異なる人たちの経験が行き交い、園芸、メダカ、天気、自然について互いに学び合える場所へ。NatureWxLabを、そんな研究拠点に育てていきます。</p>',
         '<p class="eyebrow">ORIGIN</p>',
         '<p class="eyebrow">THE LAB CYCLE</p>',
         '<p class="eyebrow">SHARED LANGUAGE</p>',
@@ -818,6 +823,65 @@ def main() -> int:
     ):
         if obsolete_copy in about_text:
             errors.append(f"about/index.html: obsolete about copy remains: {obsolete_copy}")
+
+    expected_wide_ledes = (
+        (
+            "about/index.html",
+            about_text,
+            '<div class="page-lede page-lede-wide page-intro">',
+        ),
+        (
+            "vision/index.html",
+            vision_text,
+            '<p class="page-lede page-lede-wide">自然を楽しむ人が、つながり、学び合える場所へ。現在地を確かめながら、できることを一つずつ増やしていきます。</p>',
+        ),
+        (
+            "policy/index.html",
+            policy_text,
+            '<p class="page-lede page-lede-wide">安心してご利用いただくために、データの扱い、アクセス解析、外部リンク、公開ツールの注意事項をお知らせします。</p>',
+        ),
+    )
+    for page, page_text, markup in expected_wide_ledes:
+        if page_text.count(markup) != 1:
+            errors.append(f"{page}: full-width hero copy is missing or duplicated")
+
+    about_intro = re.search(
+        r'<div class="page-lede page-lede-wide page-intro">(.*?)</div>',
+        about_text,
+        re.DOTALL,
+    )
+    if about_intro is None:
+        errors.append("about/index.html: About introduction is missing")
+    elif re.search(r"<br\s*/?>", about_intro.group(1), re.IGNORECASE):
+        errors.append("about/index.html: About introduction must wrap naturally without br")
+
+    required_wide_rules = (
+        (
+            r"\.page-lede\.page-lede-wide\s*\{[^}]*\bmax-width:\s*none\s*;",
+            "three-page hero copy width override",
+        ),
+        (
+            r"\.about-heading\s*,\s*\.about-prose\s*\{[^}]*\bmax-width:\s*none\s*;",
+            "About section copy width override",
+        ),
+    )
+    for pattern, label in required_wide_rules:
+        if not re.search(pattern, styles_text, re.DOTALL):
+            errors.append(f"styles.css: missing {label}")
+
+    natural_wrap_selectors = {
+        ".page-lede.page-lede-wide",
+        ".page-intro",
+        ".about-heading",
+        ".about-prose",
+        ".about-section h2 .heading-line",
+    }
+    for selector_text, declarations in re.findall(r"([^{}]+)\{([^{}]*)\}", styles_text):
+        selectors = {item.strip() for item in selector_text.split(",")}
+        if selectors & natural_wrap_selectors and re.search(
+            r"\bwhite-space:\s*nowrap\b", declarations
+        ):
+            errors.append("styles.css: About/Vision/Policy copy must wrap naturally")
 
     expected_hero = '<img src="/assets/images/hero-family-garden-medaka-v2.png" width="1254" height="1254" alt="" decoding="async" fetchpriority="high">'
     if home_text.count(expected_hero) != 1:

@@ -903,6 +903,10 @@ main {
   text-wrap: balance;
 }
 
+.page-lede.page-lede-wide {
+  max-width: none;
+}
+
 .page-intro {
   display: grid;
   max-width: 820px;
@@ -971,7 +975,7 @@ main {
 
 .about-heading,
 .about-prose {
-  max-width: 820px;
+  max-width: none;
 }
 
 .about-section h2 {
@@ -1385,10 +1389,6 @@ main {
 
   .about-section h2 .heading-line {
     display: inline;
-  }
-
-  .page-intro br {
-    display: none;
   }
 
   .hero-lede,
