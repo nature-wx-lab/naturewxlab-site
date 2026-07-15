@@ -301,7 +301,8 @@ def main() -> int:
         '<h3>自然の中で確かめる</h3>',
         '<h3>知恵をひらき、つなげる</h3>',
         '<h2 id="tools-title" class="home-section-title"><span class="heading-line">“天気を味方につけた管理術”を、</span><span class="heading-line">誰でも使えるカタチに。</span></h2>',
-        '共通のものさしを目指しています。',
+        '<p>園芸・農業やメダカ飼育をはじめ、自然との暮らしのなかでのお世話の判断に関わる意思決定支援ツールです。</p>',
+        '<p>植物もメダカも、屋外の生きものは、天気の影響を受けます。 「いつ動くか」「どう動くか」の判断は、ほぼすべて天気が決めていると言っても過言ではありません。だからこそ"天気を味方につけた管理術" を、誰でも使えるかたちにしました。</p>',
     )
     for markup in expected_home_copy:
         if home_text.count(markup) != 1:
@@ -311,9 +312,30 @@ def main() -> int:
         "天気と気候を調べる4つのツール",
         "自然の営みと結ぶ",
         "判断は利用者に残す",
+        "園芸やメダカをはじめ、自然との暮らしの",
+        "共通のものさしを目指しています。",
+        "地点ごとに、過去30年の統計、現在の観測、2週間先までの見通しを見比べます。",
+        "予報と観測、その差を地図で見ながら、天気・気温・雨・雪の分布を確認します。",
+        "雨や天気のデータから、植物の乾燥・水やり・根腐れと、メダカ容器のあふれリスクを推定します。",
+        "独自算出した全国陸域1km格子の気候平均と、気象庁の1か月・3か月予報による地域傾向を同じ場所で確認します。",
     ):
         if obsolete_copy in home_text:
             errors.append(f"index.html: obsolete home copy remains: {obsolete_copy}")
+
+    expected_home_tool_descriptions = {
+        "気温リスクナビ": "地点ごとに、過去30年の統計、現在や過去の観測値、2週間先までの見通しを、グラフ形式で確認できます。",
+        "天気分布予報プラス": "気象庁の予測と実況を地図で表現し、それらの平年差や前日差なども含めて、天気分布の過去・現在・未来の詳細を把握できます。",
+        "うるおい管理ナビ": "雨の予報と観測データから、植物の水やりタイミング・根腐れリスクと、屋外メダカ容器のあふれリスクを推定できます。",
+        "気候ものさしナビ": "独自算出した全国1kmメッシュの気候平均と、気象庁の最新の季節予報や観測データを組み合わせて、その土地の気候のすべてを把握できます。",
+    }
+    for tool_name, description in expected_home_tool_descriptions.items():
+        description_pattern = re.compile(
+            rf'<article class="tool-card">(?:(?!</article>).)*<h3>{re.escape(tool_name)}</h3>'
+            rf'(?:(?!</article>).)*<p>{re.escape(description)}</p>(?:(?!</article>).)*</article>',
+            re.DOTALL,
+        )
+        if not description_pattern.search(home_text):
+            errors.append(f"index.html: unexpected home description for {tool_name}")
 
     expected_about_meta = (
         '<title>NatureWxLabとは｜データと経験を、自然と暮らす知恵へ</title>',
