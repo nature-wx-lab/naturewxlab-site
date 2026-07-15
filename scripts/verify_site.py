@@ -322,7 +322,7 @@ def main() -> int:
     expected_brand_icon = '<img src="/assets/icons/naturewxlab-icon.png" width="54" height="54" alt="" aria-hidden="true">'
     expected_favicon = '<link rel="icon" href="/assets/icons/naturewxlab-icon.png" type="image/png">'
     expected_apple_touch = '<link rel="apple-touch-icon" href="/assets/icons/naturewxlab-icon.png">'
-    expected_stylesheet = '<link rel="stylesheet" href="/assets/css/styles.css?v=20260716-2">'
+    expected_stylesheet = '<link rel="stylesheet" href="/assets/css/styles.css?v=20260716-3">'
     for relative in HTML_FILES:
         text = relative.read_text(encoding="utf-8")
         page = relative.relative_to(SITE_ROOT)
@@ -423,12 +423,13 @@ def main() -> int:
         '<h3>自然の中で確かめる</h3>',
         '<h3>知恵をひらき、つなげる</h3>',
         '<div class="section-heading tools-section-heading">',
-        '<h2 id="tools-title" class="home-section-title"><span class="heading-line">“天気を味方につけた管理術”を、</span><span class="heading-line">誰でも使えるカタチに。</span></h2>',
+        '<h2 id="tools-title" class="home-section-title"><span class="heading-line"><span class="tools-title-mobile-line">“天気を味方につけた</span><span class="tools-title-mobile-line">管理術”を、</span></span><span class="heading-line">誰でも使えるカタチに。</span></h2>',
         '<p>園芸・農業、メダカ飼育をはじめ、自然との暮らしの中で生まれる日々の管理判断を支える、4つの無料の意思決定支援ツールです。</p>',
         '<p>植物もメダカも、屋外で育つ生きものは、天気の影響を大きく受けます。<br>「いつ動くか」「どう動くか」の判断は、気温や雨、日照、風などによって大きく左右されます。<br>だからこそ、“天気を味方につけた管理術” を、誰でも使えるかたちにしました。<br>一つの正解を決めるのではなく、自分の地域や環境に合わせて考えるための「共通のものさし」を目指しています。</p>',
         '<p class="eyebrow">MEDIA &amp; UPDATES</p>',
         '<h2 id="content-title" class="home-section-title">媒体ごとに、いちばん伝わるかたちで。</h2>',
         '<p>公式HPを入口に、伝えたい内容に合わせて4つの媒体を使い分けています。</p>',
+        '<h2 id="vision-title" class="home-vision-title"><span class="heading-line"><span class="vision-title-mobile-line">自然を楽しむ人が、</span><span class="vision-title-mobile-line">つながり、</span></span><span class="heading-line">学び合える場所へ。</span></h2>',
     )
     for markup in expected_home_copy:
         if home_text.count(markup) != 1:
@@ -490,6 +491,56 @@ def main() -> int:
         home_text,
     ):
         errors.append("index.html: PUBLIC TOOLS heading width class is not scoped to the tools section")
+    responsive_heading_rules = (
+        (
+            r"#tools-title\s*\{[^}]*\btext-wrap:\s*wrap\s*;",
+            "PUBLIC TOOLS natural wrapping rule",
+        ),
+        (
+            r"\.home-vision-title\s*>\s*\.heading-line\s*\{[^}]*\bdisplay:\s*block\s*;",
+            "Home VISION desktop semantic lines",
+        ),
+        (
+            r"\.about-section\s+h2\.about-one-line-title\s*\{[^}]*"
+            r"\bfont-size:\s*clamp\(1\.55rem,\s*3\.25vw,\s*2\.4rem\)\s*;[^}]*"
+            r"\btext-wrap:\s*wrap\s*;",
+            "About wide one-line title sizing",
+        ),
+        (
+            r"@media\s*\(max-width:\s*560px\)(?:(?!@media).)*"
+            r"#tools-title\s+\.tools-title-mobile-line\s*,\s*"
+            r"\.home-vision-title\s+\.vision-title-mobile-line\s*\{[^}]*"
+            r"\bdisplay:\s*block\s*;[^}]*\bwhite-space:\s*nowrap\s*;",
+            "Home narrow semantic line layout",
+        ),
+        (
+            r"@media\s*\(max-width:\s*719px\)(?:(?!@media).)*"
+            r"\.about-one-line-title\s+\.about-title-mobile-line\s*\{[^}]*"
+            r"\bdisplay:\s*block\s*;[^}]*\bwhite-space:\s*nowrap\s*;",
+            "About narrow semantic line layout",
+        ),
+        (
+            r"@media\s*\(max-width:\s*560px\)(?:(?!@media).)*"
+            r"#tools-title\s*\{[^}]*"
+            r"\bfont-size:\s*clamp\(1\.45rem,\s*6\.9vw,\s*1\.9rem\)\s*;",
+            "PUBLIC TOOLS narrow title sizing",
+        ),
+        (
+            r"@media\s*\(max-width:\s*560px\)(?:(?!@media).)*"
+            r"\.vision-panel\s+h2\s*\{[^}]*"
+            r"\bfont-size:\s*clamp\(1\.5rem,\s*6\.7vw,\s*1\.7rem\)\s*;",
+            "Home VISION narrow title sizing",
+        ),
+        (
+            r"@media\s*\(max-width:\s*560px\)(?:(?!@media).)*"
+            r"\.about-section\s+h2\.about-one-line-title\s*\{[^}]*"
+            r"\bfont-size:\s*clamp\(1\.45rem,\s*6\.5vw,\s*1\.6rem\)\s*;",
+            "About narrow title sizing",
+        ),
+    )
+    for pattern, label in responsive_heading_rules:
+        if not re.search(pattern, styles_text, re.DOTALL):
+            errors.append(f"styles.css: missing {label}")
 
     expected_tool_descriptions = {
         "気温リスクナビ": "地点ごとに、過去30年の統計、現在や過去の観測値、2週間先までの見通しを、グラフ形式で確認できます。",
@@ -794,10 +845,15 @@ def main() -> int:
         '<p>今は、一人でこの場所を育てています。けれど、目指しているのは、一人の答えを発信するだけの場所ではありません。</p>',
         '<p>地域も環境も異なる人たちの経験が行き交い、園芸、メダカ、天気、自然について互いに学び合える場所へ。NatureWxLabを、そんな研究拠点に育てていきます。</p>',
         '<p class="eyebrow">ORIGIN</p>',
+        '<h2 id="about-origin-title" class="about-one-line-title"><span class="about-title-mobile-line">空を読む仕事と、自然を</span><span class="about-title-mobile-line">育てる暮らしの間から。</span></h2>',
         '<p class="eyebrow">THE LAB CYCLE</p>',
+        '<h2 id="about-cycle-title" class="about-one-line-title"><span class="about-title-mobile-line">読む。試す。形にする。</span><span class="about-title-mobile-line">そして、また確かめる。</span></h2>',
         '<p class="eyebrow">SHARED LANGUAGE</p>',
+        '<h2 id="about-language-title" class="about-one-line-title"><span class="about-title-mobile-line">ツールは、答えではなく、</span><span class="about-title-mobile-line">経験を持ち寄るための</span><span class="about-title-mobile-line">共通言語。</span></h2>',
         '<p class="eyebrow">HUMAN × AI</p>',
+        '<h2 id="about-ai-title" class="about-one-line-title"><span class="about-title-mobile-line">一人で運営し、AIと</span><span class="about-title-mobile-line">協働してつくる研究所。</span></h2>',
         '<p class="eyebrow">OUR PRINCIPLES</p>',
+        '<h2 id="about-principles-title" class="about-one-line-title"><span class="about-title-mobile-line">この場所を育てる</span><span class="about-title-mobile-line">ための、4つの約束。</span></h2>',
         '<p class="eyebrow">FROM NOW TO NEXT</p>',
         "ChatGPT、Codex、ClaudeなどのAIを協働相手として活用しています。",
         "人が責任を持って確認しながら形にします。",
