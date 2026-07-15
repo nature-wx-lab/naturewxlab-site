@@ -346,6 +346,7 @@ main {
   text-align: center;
 }
 
+.approach-section-heading,
 .tools-section-heading {
   max-width: none;
 }
@@ -973,6 +974,13 @@ main {
 .not-found p {
   max-width: 560px;
   color: var(--muted);
+}
+
+@media (min-width: 1160px) {
+  .approach-section-copy {
+    font-size: 0.875rem;
+    white-space: nowrap;
+  }
 }
 
 @media (min-width: 1100px) {

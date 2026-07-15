@@ -267,7 +267,7 @@ def main() -> int:
     expected_brand_icon = '<img src="/assets/icons/naturewxlab-icon.png" width="54" height="54" alt="" aria-hidden="true">'
     expected_favicon = '<link rel="icon" href="/assets/icons/naturewxlab-icon.png" type="image/png">'
     expected_apple_touch = '<link rel="apple-touch-icon" href="/assets/icons/naturewxlab-icon.png">'
-    expected_stylesheet = '<link rel="stylesheet" href="/assets/css/styles.css?v=20260715-2">'
+    expected_stylesheet = '<link rel="stylesheet" href="/assets/css/styles.css?v=20260715-3">'
     for relative in HTML_FILES:
         text = relative.read_text(encoding="utf-8")
         page = relative.relative_to(SITE_ROOT)
@@ -297,7 +297,9 @@ def main() -> int:
         '<p class="eyebrow">NATURE × WEATHER × DAILY LIFE</p>',
         '<h1>データと経験が交わり、<span>自然と暮らす知恵に変わる場所。</span></h1>',
         'NatureWxLabは、現役気象予報士の知識と実体験をもとに、<br>自然のある暮らしに役立つ情報を届ける、小さな研究拠点です。',
-        '<h2 id="approach-title" class="home-section-title"><span class="heading-line">天気を読み、自然で確かめ、</span><span class="heading-line">知恵をひらく。</span></h2>',
+        '<div class="section-heading approach-section-heading">',
+        '<h2 id="approach-title" class="home-section-title">天気を読み、自然で確かめ、知恵をつなぐ。</h2>',
+        '<p class="approach-section-copy">気象データを読み解き、植物やメダカとの暮らしの中で確かめ、得られた発見をツール・記事・動画として共有する。NatureWxLabは、この循環を少しずつ育てています。</p>',
         '<h3>気象データを読み解く</h3>',
         '<h3>自然の中で確かめる</h3>',
         '<h3>知恵をひらき、つなげる</h3>',
@@ -324,12 +326,31 @@ def main() -> int:
         "園芸・農業やメダカ飼育をはじめ、自然との暮らしのなかでのお世話の判断に関わる意思決定支援ツールです。",
         "植物もメダカも、屋外の生きものは、天気の影響を受けます。",
         "判断は、天気によって大きく左右されます。",
+        "知恵をひらく。",
     ):
         if obsolete_copy in home_text:
             errors.append(f"index.html: obsolete home copy remains: {obsolete_copy}")
 
     if not re.search(r"\.tools-section-heading\s*\{[^}]*\bmax-width:\s*none\s*;", styles_text, re.DOTALL):
         errors.append("styles.css: PUBLIC TOOLS heading width override is missing")
+    if not re.search(
+        r"\.approach-section-heading\s*,\s*\.tools-section-heading\s*\{[^}]*\bmax-width:\s*none\s*;",
+        styles_text,
+        re.DOTALL,
+    ):
+        errors.append("styles.css: OUR APPROACH heading width override is missing")
+    if not re.search(
+        r'<section class="section white" aria-labelledby="approach-title">\s*<div class="section-inner">\s*'
+        r'<div class="section-heading approach-section-heading">',
+        home_text,
+    ):
+        errors.append("index.html: OUR APPROACH width class is not scoped to the approach section")
+    if "@media (min-width: 1160px)" not in styles_text or not re.search(
+        r"\.approach-section-copy\s*\{[^}]*\bfont-size:\s*0\.875rem\s*;[^}]*\bwhite-space:\s*nowrap\s*;",
+        styles_text,
+        re.DOTALL,
+    ):
+        errors.append("styles.css: OUR APPROACH desktop one-line copy rule is missing")
     if not re.search(
         r'<section class="section" aria-labelledby="tools-title">\s*<div class="section-inner">\s*'
         r'<div class="section-heading tools-section-heading">',
