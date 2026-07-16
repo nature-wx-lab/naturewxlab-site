@@ -37,9 +37,9 @@ REQUIRED_FILES = {
     "assets/images/hero-family-garden-medaka-v2.png",
     "assets/images/og-image.jpg",
     "assets/images/og-image.svg",
-    "assets/images/editorial-garden-ai-20260716.jpg",
-    "assets/images/editorial-medaka-biotope-ai-20260716.jpg",
-    "assets/images/editorial-sky-ai-20260716.jpg",
+    "assets/images/editorial-rose-garden-20260716.jpg",
+    "assets/images/editorial-medaka-pond-20260716.jpg",
+    "assets/images/editorial-summer-sky-20260716.jpg",
     "assets/images/tool-preview-climate-outlook-20260716.jpg",
     "assets/images/tool-preview-temperature-risk-20260716.jpg",
     "assets/images/tool-preview-water-care-20260716.jpg",
@@ -223,9 +223,9 @@ def main() -> int:
         "assets/icons/social-youtube.svg": "0410b0414d8f8c5f413970592e0a11edb3e3293f0e8efdd20c7d74d16067dd8b",
         "assets/images/hero-family-garden-medaka-v2.png": "8e812c8d3e02afd15fa60fffcd65195940a1623c998e0ebc1a72842ae5462bc1",
         "assets/images/og-image.jpg": "9198c25cae29d01cdfaab1941c5095bad66627abd17003bedf6c04294e9ad35b",
-        "assets/images/editorial-garden-ai-20260716.jpg": "4d9573cb3882a0f67f11aa77ea18ecb95269bf53bf301be623f4d27571f7510d",
-        "assets/images/editorial-medaka-biotope-ai-20260716.jpg": "036fba4fb3b251538fa0aec0bce9bd95128cad4b7f645ed641983732169d0ab8",
-        "assets/images/editorial-sky-ai-20260716.jpg": "7cfc1a2124fe5f4151fea8a506608e8c075c926a4cc85564856a63e0dea5d429",
+        "assets/images/editorial-rose-garden-20260716.jpg": "7354d56c91978736b5ceb2751b6a758d623db530f50495a47ec85d3edc5b3c49",
+        "assets/images/editorial-medaka-pond-20260716.jpg": "2bdab0cb963547181d560fe06181a4a79dc83662642d25039fbf226c45d98cd7",
+        "assets/images/editorial-summer-sky-20260716.jpg": "0f41277c9625ad375824c953646e95ea6e8ff11b5b17dc559796f26968a843b2",
         "assets/images/tool-preview-climate-outlook-20260716.jpg": "036e25c730b6864b6b1d963e28ffa90b05fc83f981d0be0921ab999a3b745b6f",
         "assets/images/tool-preview-temperature-risk-20260716.jpg": "3fb8f2c87de0ecb4e78b47fb27a88926d0b7f98104a46901c287a3642646e1bf",
         "assets/images/tool-preview-water-care-20260716.jpg": "db56f994547e8745fdfb05f55312698c995f4652b86f7369b4fa64365b28c7b2",
@@ -247,40 +247,40 @@ def main() -> int:
         if jpeg_dimensions(payload) != (1425, 891):
             errors.append(f"{relative}: tool preview dimensions must be 1425x891")
 
-    generated_photos = {
-        "assets/images/editorial-garden-ai-20260716.jpg": (1200, 800),
-        "assets/images/editorial-medaka-biotope-ai-20260716.jpg": (1200, 800),
-        "assets/images/editorial-sky-ai-20260716.jpg": (1200, 614),
+    editorial_photos = {
+        "assets/images/editorial-rose-garden-20260716.jpg": (1200, 400),
+        "assets/images/editorial-medaka-pond-20260716.jpg": (1200, 400),
+        "assets/images/editorial-summer-sky-20260716.jpg": (1200, 400),
     }
-    if not set(generated_photos).issubset(REQUIRED_FILES):
-        errors.append("generated editorial photos must be present in the deploy allowlist")
-    if not set(generated_photos).issubset(expected_asset_sha256):
-        errors.append("generated editorial photos must have pinned hashes")
-    for relative, expected_dimensions in generated_photos.items():
+    if not set(editorial_photos).issubset(REQUIRED_FILES):
+        errors.append("editorial photos must be present in the deploy allowlist")
+    if not set(editorial_photos).issubset(expected_asset_sha256):
+        errors.append("editorial photos must have pinned hashes")
+    for relative, expected_dimensions in editorial_photos.items():
         asset = SITE_ROOT / relative
         if not asset.is_file():
             continue
         payload = asset.read_bytes()
         if not payload.startswith(b"\xff\xd8\xff"):
-            errors.append(f"{relative}: generated editorial photo must be a JPEG file")
+            errors.append(f"{relative}: editorial photo must be a JPEG file")
         if jpeg_dimensions(payload) != expected_dimensions:
-            errors.append(f"{relative}: generated editorial photo dimensions changed")
+            errors.append(f"{relative}: editorial photo dimensions changed")
         app_segments = jpeg_app_segments(payload)
         if app_segments is None:
-            errors.append(f"{relative}: generated editorial photo has malformed JPEG metadata")
+            errors.append(f"{relative}: editorial photo has malformed JPEG metadata")
             continue
         if [marker for marker, _ in app_segments] != [0xE0, 0xE1]:
-            errors.append(f"{relative}: generated editorial photo has unexpected metadata segments")
+            errors.append(f"{relative}: editorial photo has unexpected metadata segments")
             continue
         app0, app1 = (segment for _, segment in app_segments)
         if not app0.startswith(b"JFIF\x00"):
-            errors.append(f"{relative}: generated editorial photo is missing the expected JFIF marker")
+            errors.append(f"{relative}: editorial photo is missing the expected JFIF marker")
         if len(app1) != 74 or not app1.startswith(b"Exif\x00\x00"):
-            errors.append(f"{relative}: generated editorial photo EXIF block changed")
+            errors.append(f"{relative}: editorial photo EXIF block changed")
         metadata = b"".join(segment for _, segment in app_segments).lower()
         for marker in (b"gps", b"latitude", b"longitude", b"prompt", b"seed", b"/users/", b"file" + b"://", b"http", b"@"):
             if marker in metadata:
-                errors.append(f"{relative}: generated editorial photo contains disallowed metadata")
+                errors.append(f"{relative}: editorial photo contains disallowed metadata")
                 break
 
     safe_svg_files = (
@@ -396,7 +396,7 @@ def main() -> int:
     expected_brand_icon = '<img src="/assets/icons/naturewxlab-icon.png" width="54" height="54" alt="" aria-hidden="true">'
     expected_favicon = '<link rel="icon" href="/assets/icons/naturewxlab-icon.png" type="image/png">'
     expected_apple_touch = '<link rel="apple-touch-icon" href="/assets/icons/naturewxlab-icon.png">'
-    expected_stylesheet = '<link rel="stylesheet" href="/assets/css/styles.css?v=20260716-4">'
+    expected_stylesheet = '<link rel="stylesheet" href="/assets/css/styles.css?v=20260716-5">'
     for relative in HTML_FILES:
         text = relative.read_text(encoding="utf-8")
         page = relative.relative_to(SITE_ROOT)
@@ -438,8 +438,7 @@ def main() -> int:
             home_text,
             '<section class="section white" aria-labelledby="approach-title">',
             '<figure class="editorial-photo home-garden-photo">\n'
-            '          <img src="/assets/images/editorial-garden-ai-20260716.jpg" width="1200" height="800" alt="雨上がりの庭に草花や鉢植えが並ぶAI生成イメージ" loading="lazy" decoding="async">\n'
-            '          <figcaption>自然のある暮らし（AI生成イメージ）</figcaption>\n'
+            '          <img src="/assets/images/editorial-rose-garden-20260716.jpg" width="1200" height="400" alt="夕日に照らされた色とりどりのバラ園" loading="lazy" decoding="async">\n'
             "        </figure>",
         ),
         (
@@ -447,8 +446,7 @@ def main() -> int:
             about_text,
             '<section class="section white about-section" aria-labelledby="about-origin-title">',
             '<figure class="editorial-photo about-biotope-photo">\n'
-            '            <img src="/assets/images/editorial-medaka-biotope-ai-20260716.jpg" width="1200" height="800" alt="水草のある屋外容器をメダカが泳ぐAI生成イメージ" loading="lazy" decoding="async">\n'
-            '            <figcaption>屋外メダカビオトープ（AI生成イメージ）</figcaption>\n'
+            '            <img src="/assets/images/editorial-medaka-pond-20260716.jpg" width="1200" height="400" alt="緑に囲まれた屋外ビオトープを泳ぐメダカ" loading="lazy" decoding="async">\n'
             "          </figure>",
         ),
         (
@@ -456,22 +454,21 @@ def main() -> int:
             vision_text,
             '<section class="section white">',
             '<figure class="editorial-photo vision-sky-photo">\n'
-            '          <img src="/assets/images/editorial-sky-ai-20260716.jpg" width="1200" height="614" alt="青空に白い雲が広がり、遠くに緑の山並みが見えるAI生成イメージ" loading="lazy" decoding="async">\n'
-            '          <figcaption>空と季節の移ろい（AI生成イメージ）</figcaption>\n'
+            '          <img src="/assets/images/editorial-summer-sky-20260716.jpg" width="1200" height="400" alt="夏の青空に白い積乱雲が広がる風景" loading="lazy" decoding="async">\n'
             "        </figure>",
         ),
     )
     for page, page_text, section_start, markup in expected_editorial_photos:
         if page_text.count(markup) != 1:
-            errors.append(f"{page}: generated editorial photo is missing or duplicated")
+            errors.append(f"{page}: editorial photo is missing or duplicated")
             continue
         start = page_text.find(section_start)
         end = page_text.find("</section>", start)
         position = page_text.find(markup)
         if start < 0 or end < 0 or not start < position < end:
-            errors.append(f"{page}: generated editorial photo is outside its intended section")
+            errors.append(f"{page}: editorial photo is outside its intended section")
     if sum(text.count('<figure class="editorial-photo ') for text in (home_text, about_text, vision_text, policy_text)) != 3:
-        errors.append("generated editorial photos must appear exactly once on Home, About, and Vision")
+        errors.append("editorial photos must appear exactly once on Home, About, and Vision")
     for relative in (SITE_ROOT / "tools/index.html", SITE_ROOT / "policy/index.html", SITE_ROOT / "404.html"):
         if "editorial-photo" in relative.read_text(encoding="utf-8"):
             errors.append(f"{relative.relative_to(SITE_ROOT)}: decorative editorial photos are not allowed on this page")
@@ -493,17 +490,16 @@ def main() -> int:
             or height_match is None
             or height_match.group(1).strip() != "auto"
         ):
-            errors.append("styles.css: generated editorial photos must not be cropped or stretched")
-    if not re.search(
-        r"\.editorial-photo\s+figcaption\s*\{[^}]*\bfont-size:\s*12px\s*;[^}]*\bline-height:\s*1\.6\s*;",
-        styles_text,
-        re.DOTALL,
-    ):
-        errors.append("styles.css: generated editorial photo disclosure styling is missing")
+            errors.append("styles.css: editorial photos must not be cropped or stretched")
+    if re.search(r"\.editorial-photo\s+figcaption\s*\{", styles_text):
+        errors.append("styles.css: obsolete editorial photo caption styling remains")
+    for page, page_text in (("index.html", home_text), ("about/index.html", about_text), ("vision/index.html", vision_text)):
+        if "AI生成イメージ" in page_text:
+            errors.append(f"{page}: obsolete AI-generated image annotation remains")
     if not re.search(r"\.vision-sky-photo\s*\{[^}]*\bgrid-column:\s*1\s*/\s*-1\s*;", styles_text, re.DOTALL):
         errors.append("styles.css: Vision sky photo must span the full content grid")
     if any("background" in line and "editorial-" in line for line in styles_text.splitlines()):
-        errors.append("styles.css: generated editorial photos must remain semantic images, not CSS backgrounds")
+        errors.append("styles.css: editorial photos must remain semantic images, not CSS backgrounds")
     if not re.search(
         r"\.site-footer\s*\{[^}]*\bpadding-block:\s*18px\s*;",
         styles_text,
