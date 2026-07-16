@@ -417,7 +417,7 @@ def main() -> int:
     expected_brand_icon = '<img src="/assets/icons/naturewxlab-icon.png" width="54" height="54" alt="" aria-hidden="true">'
     expected_favicon = '<link rel="icon" href="/assets/icons/naturewxlab-icon.png" type="image/png">'
     expected_apple_touch = '<link rel="apple-touch-icon" href="/assets/icons/naturewxlab-icon.png">'
-    expected_stylesheet = '<link rel="stylesheet" href="/assets/css/styles.css?v=20260717-1">'
+    expected_stylesheet = '<link rel="stylesheet" href="/assets/css/styles.css?v=20260717-2">'
     for relative in HTML_FILES:
         text = relative.read_text(encoding="utf-8")
         page = relative.relative_to(SITE_ROOT)
@@ -1085,6 +1085,18 @@ def main() -> int:
     elif re.search(r"<br\s*/?>", about_intro.group(1), re.IGNORECASE):
         errors.append("about/index.html: About introduction must wrap naturally without br")
 
+    expected_origin_closing = (
+        '<p class="about-origin-closing">ならば、気象データと実体験の両方を使って考えられる場所を作ろう。'
+        'NatureWxLabは、そこから始まりました。</p>'
+    )
+    if about_text.count(expected_origin_closing) != 1:
+        errors.append("about/index.html: ORIGIN closing sentences must share one paragraph")
+    if (
+        "<p>ならば、気象データと実体験の両方を使って考えられる場所を作ろう。</p>" in about_text
+        or "<p>NatureWxLabは、そこから始まりました。</p>" in about_text
+    ):
+        errors.append("about/index.html: obsolete split ORIGIN closing paragraphs remain")
+
     required_wide_rules = (
         (
             r"\.page-lede\.page-lede-wide\s*\{[^}]*\bmax-width:\s*none\s*;",
@@ -1112,6 +1124,19 @@ def main() -> int:
             r"\bwhite-space:\s*nowrap\b", declarations
         ):
             errors.append("styles.css: About/Vision/Policy copy must wrap naturally")
+    if not re.search(
+        r"\.about-origin-closing\s*\{[^}]*\bwhite-space:\s*nowrap\s*;",
+        styles_text,
+        re.DOTALL,
+    ):
+        errors.append("styles.css: desktop ORIGIN closing line rule is missing")
+    if not re.search(
+        r"@media\s*\(max-width:\s*880px\)\s*\{[^{}]*"
+        r"\.about-origin-closing\s*\{[^}]*\bwhite-space:\s*normal\s*;",
+        styles_text,
+        re.DOTALL,
+    ):
+        errors.append("styles.css: mobile ORIGIN closing wrap rule is missing")
 
     expected_hero = '<img src="/assets/images/hero-family-garden-medaka-v2.png" width="1254" height="1254" alt="" decoding="async" fetchpriority="high">'
     if home_text.count(expected_hero) != 1:
@@ -1208,6 +1233,15 @@ def main() -> int:
         re.DOTALL,
     ):
         errors.append("styles.css: media role pill styling is missing")
+    if not re.search(
+        r"\.service-mark\.note\s*\{[^}]*\bborder-color:\s*#e5e5e5\s*;"
+        r"[^}]*\bbackground:\s*#fff\s*;[^}]*\}"
+        r"\s*\.service-mark\.note\s+img\s*\{[^}]*\bwidth:\s*40px\s*;"
+        r"[^}]*\bheight:\s*40px\s*;",
+        styles_text,
+        re.DOTALL,
+    ):
+        errors.append("styles.css: note icon rounded frame styling is missing")
     if not re.search(
         r"@media\s*\(max-width:\s*1099px\)\s*\{\s*\.media-grid\s*\{[^}]*"
         r"grid-template-columns:\s*repeat\(2,\s*minmax\(0,\s*1fr\)\)\s*;",

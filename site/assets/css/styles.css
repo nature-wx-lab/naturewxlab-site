@@ -875,14 +875,14 @@ main {
 }
 
 .service-mark.note {
-  border-color: transparent;
-  background: transparent;
+  border-color: #e5e5e5;
+  background: #fff;
   color: #24645b;
 }
 
 .service-mark.note img {
-  width: 42px;
-  height: 42px;
+  width: 40px;
+  height: 40px;
 }
 
 .service-mark.instagram {
@@ -1070,6 +1070,10 @@ main {
 .about-heading,
 .about-prose {
   max-width: none;
+}
+
+.about-origin-closing {
+  white-space: nowrap;
 }
 
 .about-section h2 {
@@ -1374,6 +1378,10 @@ main {
 }
 
 @media (max-width: 880px) {
+  .about-origin-closing {
+    white-space: normal;
+  }
+
   .header-inner {
     min-height: 64px;
     padding-block: 6px;

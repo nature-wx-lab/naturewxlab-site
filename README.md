@@ -56,7 +56,7 @@ NATUREWXLAB_GA4_ID='専用測定ID' PYTHONDONTWRITEBYTECODE=1 python3 scripts/ve
 
 トップの媒体カードでは、各サービスを識別する目的に限ってローカル保存したブランドマークを使用します。外部CDNや各サービスの画像URLは読み込まないため、アイコン表示だけで第三者への通信は発生しません。
 
-- note：公式の[ブランドガイドライン](https://www.help-note.com/hc/ja/articles/360000235582-%E3%83%96%E3%83%A9%E3%83%B3%E3%83%89%E3%82%AC%E3%82%A4%E3%83%89%E3%83%A9%E3%82%A4%E3%83%B3-%E3%83%AD%E3%82%B4%E3%83%87%E3%83%BC%E3%82%BF-%E3%82%AB%E3%83%A9%E3%83%BC)で案内される小サイズ向けの角丸 `n` アイコン
+- note：公式の[ブランドガイドライン](https://www.help-note.com/hc/ja/articles/360000235582-%E3%83%96%E3%83%A9%E3%83%B3%E3%83%89%E3%82%AC%E3%82%A4%E3%83%89%E3%83%A9%E3%82%A4%E3%83%B3-%E3%83%AD%E3%82%B4%E3%83%87%E3%83%BC%E3%82%BF-%E3%82%AB%E3%83%A9%E3%83%BC)で案内される小サイズ向けの角丸 `n` アイコン。画像自体は加工せず、サイト内では他媒体と共通の42×42px角丸枠へ収める
 - X：公式の[ブランドツールキット](https://about.x.com/ja/who-we-are/brand-toolkit)で配布されるXロゴ
 - Instagram：Meta公式の[Instagramブランドリソース](https://about.meta.com/brand/resources/instagram/instagram-brand/)で配布される黒色グリフ
 - YouTube：公式の[YouTubeブランドリソース](https://brand.youtube/youtube-icon/)で使用されている小型ソーシャルリンク用のYouTube Redマーク
