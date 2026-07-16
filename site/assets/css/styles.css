@@ -399,8 +399,12 @@ main {
 }
 
 .editorial-photo {
-  width: min(100%, 900px);
-  margin: 34px auto 0;
+  position: relative;
+  left: 50%;
+  width: calc(100vw - clamp(28px, 3vw, 48px));
+  max-width: none;
+  margin: 34px 0 0;
+  transform: translateX(-50%);
 }
 
 .editorial-photo img {
@@ -411,17 +415,6 @@ main {
   border-radius: var(--radius);
   background: var(--mist-strong);
   box-shadow: 0 14px 34px rgba(28, 71, 59, 0.1);
-}
-
-.about-biotope-photo {
-  width: min(100%, 760px);
-  margin-inline: auto;
-}
-
-.vision-sky-photo {
-  width: 100%;
-  margin-top: 0;
-  grid-column: 1 / -1;
 }
 
 .card,
@@ -1497,10 +1490,6 @@ main {
 
   .editorial-photo {
     margin-top: 26px;
-  }
-
-  .vision-sky-photo {
-    margin-top: 0;
   }
 
   .section.about-section {

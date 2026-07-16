@@ -37,9 +37,9 @@ REQUIRED_FILES = {
     "assets/images/hero-family-garden-medaka-v2.png",
     "assets/images/og-image.jpg",
     "assets/images/og-image.svg",
-    "assets/images/editorial-rose-garden-20260716.jpg",
-    "assets/images/editorial-medaka-pond-20260716.jpg",
-    "assets/images/editorial-summer-sky-20260716.jpg",
+    "assets/images/editorial-rose-garden-banner-20260716.jpg",
+    "assets/images/editorial-medaka-pond-banner-20260716.jpg",
+    "assets/images/editorial-summer-sky-banner-20260716.jpg",
     "assets/images/tool-preview-climate-outlook-20260716.jpg",
     "assets/images/tool-preview-temperature-risk-20260716.jpg",
     "assets/images/tool-preview-water-care-20260716.jpg",
@@ -223,9 +223,9 @@ def main() -> int:
         "assets/icons/social-youtube.svg": "0410b0414d8f8c5f413970592e0a11edb3e3293f0e8efdd20c7d74d16067dd8b",
         "assets/images/hero-family-garden-medaka-v2.png": "8e812c8d3e02afd15fa60fffcd65195940a1623c998e0ebc1a72842ae5462bc1",
         "assets/images/og-image.jpg": "9198c25cae29d01cdfaab1941c5095bad66627abd17003bedf6c04294e9ad35b",
-        "assets/images/editorial-rose-garden-20260716.jpg": "7354d56c91978736b5ceb2751b6a758d623db530f50495a47ec85d3edc5b3c49",
-        "assets/images/editorial-medaka-pond-20260716.jpg": "2bdab0cb963547181d560fe06181a4a79dc83662642d25039fbf226c45d98cd7",
-        "assets/images/editorial-summer-sky-20260716.jpg": "0f41277c9625ad375824c953646e95ea6e8ff11b5b17dc559796f26968a843b2",
+        "assets/images/editorial-rose-garden-banner-20260716.jpg": "b4faded810f7a6416a0c985324ebee3d902f0b6bb9072e9a8e8b87cf144295be",
+        "assets/images/editorial-medaka-pond-banner-20260716.jpg": "b262dd031bf4c2ae230df2b7d60ccd01534817c89c98b82a89ad20e7bbedfb78",
+        "assets/images/editorial-summer-sky-banner-20260716.jpg": "e8cc7c78ecbb04c621cb65c04a2106c429b2527eef355575a44a5fe337b2b27e",
         "assets/images/tool-preview-climate-outlook-20260716.jpg": "036e25c730b6864b6b1d963e28ffa90b05fc83f981d0be0921ab999a3b745b6f",
         "assets/images/tool-preview-temperature-risk-20260716.jpg": "3fb8f2c87de0ecb4e78b47fb27a88926d0b7f98104a46901c287a3642646e1bf",
         "assets/images/tool-preview-water-care-20260716.jpg": "db56f994547e8745fdfb05f55312698c995f4652b86f7369b4fa64365b28c7b2",
@@ -248,9 +248,9 @@ def main() -> int:
             errors.append(f"{relative}: tool preview dimensions must be 1425x891")
 
     editorial_photos = {
-        "assets/images/editorial-rose-garden-20260716.jpg": (1200, 400),
-        "assets/images/editorial-medaka-pond-20260716.jpg": (1200, 400),
-        "assets/images/editorial-summer-sky-20260716.jpg": (1200, 400),
+        "assets/images/editorial-rose-garden-banner-20260716.jpg": (2172, 724),
+        "assets/images/editorial-medaka-pond-banner-20260716.jpg": (2048, 626),
+        "assets/images/editorial-summer-sky-banner-20260716.jpg": (2048, 626),
     }
     if not set(editorial_photos).issubset(REQUIRED_FILES):
         errors.append("editorial photos must be present in the deploy allowlist")
@@ -396,7 +396,7 @@ def main() -> int:
     expected_brand_icon = '<img src="/assets/icons/naturewxlab-icon.png" width="54" height="54" alt="" aria-hidden="true">'
     expected_favicon = '<link rel="icon" href="/assets/icons/naturewxlab-icon.png" type="image/png">'
     expected_apple_touch = '<link rel="apple-touch-icon" href="/assets/icons/naturewxlab-icon.png">'
-    expected_stylesheet = '<link rel="stylesheet" href="/assets/css/styles.css?v=20260716-5">'
+    expected_stylesheet = '<link rel="stylesheet" href="/assets/css/styles.css?v=20260716-6">'
     for relative in HTML_FILES:
         text = relative.read_text(encoding="utf-8")
         page = relative.relative_to(SITE_ROOT)
@@ -438,7 +438,7 @@ def main() -> int:
             home_text,
             '<section class="section white" aria-labelledby="approach-title">',
             '<figure class="editorial-photo home-garden-photo">\n'
-            '          <img src="/assets/images/editorial-rose-garden-20260716.jpg" width="1200" height="400" alt="夕日に照らされた色とりどりのバラ園" loading="lazy" decoding="async">\n'
+            '          <img src="/assets/images/editorial-rose-garden-banner-20260716.jpg" width="2172" height="724" alt="日差しの中で色とりどりのバラが咲く庭園" loading="lazy" decoding="async">\n'
             "        </figure>",
         ),
         (
@@ -446,7 +446,7 @@ def main() -> int:
             about_text,
             '<section class="section white about-section" aria-labelledby="about-origin-title">',
             '<figure class="editorial-photo about-biotope-photo">\n'
-            '            <img src="/assets/images/editorial-medaka-pond-20260716.jpg" width="1200" height="400" alt="緑に囲まれた屋外ビオトープを泳ぐメダカ" loading="lazy" decoding="async">\n'
+            '            <img src="/assets/images/editorial-medaka-pond-banner-20260716.jpg" width="2048" height="626" alt="緑に囲まれた池を泳ぐメダカ" loading="lazy" decoding="async">\n'
             "          </figure>",
         ),
         (
@@ -454,8 +454,8 @@ def main() -> int:
             vision_text,
             '<section class="section white">',
             '<figure class="editorial-photo vision-sky-photo">\n'
-            '          <img src="/assets/images/editorial-summer-sky-20260716.jpg" width="1200" height="400" alt="夏の青空に白い積乱雲が広がる風景" loading="lazy" decoding="async">\n'
-            "        </figure>",
+            '        <img src="/assets/images/editorial-summer-sky-banner-20260716.jpg" width="2048" height="626" alt="強い日差しの下に青空と白い雲が広がる風景" loading="lazy" decoding="async">\n'
+            "      </figure>",
         ),
     )
     for page, page_text, section_start, markup in expected_editorial_photos:
@@ -493,11 +493,17 @@ def main() -> int:
             errors.append("styles.css: editorial photos must not be cropped or stretched")
     if re.search(r"\.editorial-photo\s+figcaption\s*\{", styles_text):
         errors.append("styles.css: obsolete editorial photo caption styling remains")
+    if not re.search(
+        r"\.editorial-photo\s*\{[^}]*\bposition:\s*relative\s*;[^}]*"
+        r"\bleft:\s*50%\s*;[^}]*\bwidth:\s*calc\(100vw\s*-\s*clamp\(28px,\s*3vw,\s*48px\)\)\s*;[^}]*"
+        r"\bmax-width:\s*none\s*;[^}]*\btransform:\s*translateX\(-50%\)\s*;",
+        styles_text,
+        re.DOTALL,
+    ):
+        errors.append("styles.css: viewport-wide editorial banner layout is missing")
     for page, page_text in (("index.html", home_text), ("about/index.html", about_text), ("vision/index.html", vision_text)):
         if "AI生成イメージ" in page_text:
             errors.append(f"{page}: obsolete AI-generated image annotation remains")
-    if not re.search(r"\.vision-sky-photo\s*\{[^}]*\bgrid-column:\s*1\s*/\s*-1\s*;", styles_text, re.DOTALL):
-        errors.append("styles.css: Vision sky photo must span the full content grid")
     if any("background" in line and "editorial-" in line for line in styles_text.splitlines()):
         errors.append("styles.css: editorial photos must remain semantic images, not CSS backgrounds")
     if not re.search(

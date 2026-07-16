@@ -37,13 +37,13 @@ NATUREWXLAB_GA4_ID='専用測定ID' PYTHONDONTWRITEBYTECODE=1 python3 scripts/ve
 
 ## Editorial imagery
 
-ユーザー指定の横長画像を、既存デザインの余白とタイポグラフィを損なわない3か所だけに使用します。画像下の説明注釈は表示せず、内容を伝えるaltだけを付けます。外部画像URLは読み込まず、すべてローカル配信します。サイトの説明用ビジュアルとして扱い、NatureWxLabの実在する研究施設、庭、飼育環境を記録した写真とは位置づけません。
+ユーザー指定の横長画像を3か所だけに使用します。本文幅のカード内へ閉じ込めず、PC・スマートフォンとも画面の左右に小さな余白だけを残すバナーとして表示します。画像下の説明注釈は表示せず、内容を伝えるaltだけを付けます。外部画像URLは読み込まず、すべてローカル配信します。サイトの説明用ビジュアルとして扱い、NatureWxLabの実在する研究施設、庭、飼育環境を記録した写真とは位置づけません。
 
-- `editorial-rose-garden-20260716.jpg`：夕日に照らされたバラ園。HomeのOUR APPROACH末尾に掲載。1200×400 JPEG。
-- `editorial-medaka-pond-20260716.jpg`：緑に囲まれた屋外ビオトープ。AboutのORIGINに掲載。1200×400 JPEG。
-- `editorial-summer-sky-20260716.jpg`：夏の青空と積乱雲。VisionのNOW説明後に掲載。1200×400 JPEG。
+- `editorial-rose-garden-banner-20260716.jpg`：日差しの中でバラが咲く庭園。HomeのOUR APPROACH末尾に掲載。2172×724 JPEG。
+- `editorial-medaka-pond-banner-20260716.jpg`：緑に囲まれた池を泳ぐメダカ。AboutのORIGINに掲載。2048×626 JPEG。
+- `editorial-summer-sky-banner-20260716.jpg`：強い日差しと青空・白い雲。VisionのNOW説明後に掲載。2048×626 JPEG。
 
-公開用JPEGは、元画像の3:1の縦横比を切り抜かず保ったまま、スマートフォンでも過度な転送量にならない1200px幅へ最適化します。寸法・形式・SHA-256・許可する最小限の画像メタデータを検査スクリプトで固定します。Toolsは既存の初期画面画像を優先し、Policyは可読性と説明責任を優先して装飾写真を追加しません。
+公開用JPEGは、各元画像の構図と縦横比を切り抜かず保ったまま最適化します。画像枠は `calc(100vw - clamp(28px, 3vw, 48px))` とし、左右余白はスマートフォンで14px、PCで最大24pxです。寸法・形式・SHA-256・許可する最小限の画像メタデータを検査スクリプトで固定します。Toolsは既存の初期画面画像を優先し、Policyは可読性と説明責任を優先して装飾写真を追加しません。
 
 ## Social brand assets
 
