@@ -25,6 +25,7 @@ REQUIRED_FILES = {
     "policy/index.html",
     "404.html",
     "assets/css/styles.css",
+    "assets/js/navigation.js",
     "assets/js/analytics-config.js",
     "assets/js/analytics-consent.js",
     "assets/icons/naturewxlab-icon.png",
@@ -71,6 +72,9 @@ class PageParser(HTMLParser):
         self.viewport_count = 0
         self.html_lang = ""
         self.links: list[str] = []
+        self.has_navigation_script = False
+        self.has_nav_toggle = False
+        self.has_global_nav = False
         self.has_analytics_config = False
         self.has_analytics_consent = False
         self.has_consent_ui = False
@@ -103,6 +107,8 @@ class PageParser(HTMLParser):
                 self.errors.append(f"javascript URL in {name}")
         if tag == "a" and attributes.get("href"):
             self.links.append(attributes["href"])
+        if tag == "script" and attributes.get("src") == "/assets/js/navigation.js":
+            self.has_navigation_script = True
         if tag == "script" and attributes.get("src") == "/assets/js/analytics-config.js":
             self.has_analytics_config = True
         if tag == "script" and attributes.get("src") == "/assets/js/analytics-consent.js":
@@ -113,6 +119,19 @@ class PageParser(HTMLParser):
                 self.has_versioned_stylesheet = True
         if "data-analytics-consent" in attributes:
             self.has_consent_ui = True
+        if (
+            tag == "button"
+            and "data-nav-toggle" in attributes
+            and attributes.get("aria-controls") == "global-nav"
+            and attributes.get("aria-expanded") == "false"
+        ):
+            self.has_nav_toggle = True
+        if (
+            tag == "nav"
+            and "data-global-nav" in attributes
+            and attributes.get("id") == "global-nav"
+        ):
+            self.has_global_nav = True
         for element, attribute in LOCAL_ASSET_ATTRIBUTES:
             if tag != element or not attributes.get(attribute):
                 continue
@@ -357,6 +376,8 @@ def main() -> int:
             errors.append(f"{relative}: expected one viewport meta")
         if not parser.has_analytics_config or not parser.has_analytics_consent:
             errors.append(f"{relative}: analytics safety scripts are missing")
+        if not parser.has_navigation_script or not parser.has_nav_toggle or not parser.has_global_nav:
+            errors.append(f"{relative}: accessible mobile navigation is missing")
         if not parser.has_versioned_stylesheet:
             errors.append(f"{relative}: stylesheet URL must include a cache-busting version")
         if not parser.has_consent_ui:
@@ -396,7 +417,7 @@ def main() -> int:
     expected_brand_icon = '<img src="/assets/icons/naturewxlab-icon.png" width="54" height="54" alt="" aria-hidden="true">'
     expected_favicon = '<link rel="icon" href="/assets/icons/naturewxlab-icon.png" type="image/png">'
     expected_apple_touch = '<link rel="apple-touch-icon" href="/assets/icons/naturewxlab-icon.png">'
-    expected_stylesheet = '<link rel="stylesheet" href="/assets/css/styles.css?v=20260716-7">'
+    expected_stylesheet = '<link rel="stylesheet" href="/assets/css/styles.css?v=20260716-8">'
     for relative in HTML_FILES:
         text = relative.read_text(encoding="utf-8")
         page = relative.relative_to(SITE_ROOT)
@@ -567,7 +588,7 @@ def main() -> int:
             errors.append(f"index.html: required home metadata is missing or duplicated: {markup}")
     expected_home_copy = (
         '<p class="eyebrow">NATURE × WEATHER × DAILY LIFE</p>',
-        '<h1>データと経験が交わり、<span>自然と暮らす知恵に変わる場所。</span></h1>',
+        '<h1>データと経験が交わり、<span>自然と暮らす知恵に変わる<span class="no-break">場所。</span></span></h1>',
         'NatureWxLabは、現役気象予報士の知識と実体験をもとに、<br>自然のある暮らしに役立つ情報を届ける、小さな研究拠点です。',
         '<div class="section-heading approach-section-heading">',
         '<h2 id="approach-title" class="home-section-title">天気を読み、自然で確かめ、知恵をつなぐ。</h2>',
