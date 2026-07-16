@@ -417,7 +417,7 @@ def main() -> int:
     expected_brand_icon = '<img src="/assets/icons/naturewxlab-icon.png" width="54" height="54" alt="" aria-hidden="true">'
     expected_favicon = '<link rel="icon" href="/assets/icons/naturewxlab-icon.png" type="image/png">'
     expected_apple_touch = '<link rel="apple-touch-icon" href="/assets/icons/naturewxlab-icon.png">'
-    expected_stylesheet = '<link rel="stylesheet" href="/assets/css/styles.css?v=20260716-8">'
+    expected_stylesheet = '<link rel="stylesheet" href="/assets/css/styles.css?v=20260717-1">'
     for relative in HTML_FILES:
         text = relative.read_text(encoding="utf-8")
         page = relative.relative_to(SITE_ROOT)
@@ -1248,6 +1248,13 @@ def main() -> int:
         re.DOTALL,
     ):
         errors.append("styles.css: yellow and black Yahoo! Auctions badge styling is missing")
+    if not re.search(
+        r"\.auction-wordmark\s*\{[^}]*-webkit-text-stroke:\s*0\.3px\s+currentColor\s*;"
+        r"[^}]*transform:\s*translateX\(-0\.8px\)\s+skew\(-7deg\)\s*;",
+        styles_text,
+        re.DOTALL,
+    ):
+        errors.append("styles.css: Yahoo! Auctions wordmark centering and weight correction is missing")
     expected_sales_cards = (
         (expected_mercari_icon, "メルカリ", "植物などの出品情報をご覧いただけます。", "https://jp.mercari.com/user/profile/474428763", "sales_mercari", "メルカリの出品を見る"),
         (expected_auction_icon, "Yahoo!オークション", "メダカの出品情報をご覧いただけます。", "https://auctions.yahoo.co.jp/seller/2Nn3kZv4J22cbfTSoVYSVRRp2M6Ao?user_type=c", "sales_yahoo_auctions", "Yahoo!オークションの出品を見る"),

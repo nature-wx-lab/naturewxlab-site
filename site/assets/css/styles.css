@@ -911,14 +911,17 @@ main {
 
 .auction-wordmark {
   display: block;
-  font-family: "Arial Black", "Hiragino Kaku Gothic ProN", "Yu Gothic", sans-serif;
+  font-family: "Hiragino Sans", "Hiragino Kaku Gothic ProN", "Yu Gothic", sans-serif;
   font-size: 9px;
   font-style: italic;
   font-weight: 900;
-  letter-spacing: -0.1em;
+  letter-spacing: -0.08em;
   line-height: 1;
   white-space: nowrap;
-  transform: skew(-7deg);
+  -webkit-text-stroke: 0.3px currentColor;
+  paint-order: stroke fill;
+  transform: translateX(-0.8px) skew(-7deg);
+  transform-origin: center;
 }
 
 .link-card a {
