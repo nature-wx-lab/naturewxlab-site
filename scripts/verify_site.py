@@ -396,7 +396,7 @@ def main() -> int:
     expected_brand_icon = '<img src="/assets/icons/naturewxlab-icon.png" width="54" height="54" alt="" aria-hidden="true">'
     expected_favicon = '<link rel="icon" href="/assets/icons/naturewxlab-icon.png" type="image/png">'
     expected_apple_touch = '<link rel="apple-touch-icon" href="/assets/icons/naturewxlab-icon.png">'
-    expected_stylesheet = '<link rel="stylesheet" href="/assets/css/styles.css?v=20260716-6">'
+    expected_stylesheet = '<link rel="stylesheet" href="/assets/css/styles.css?v=20260716-7">'
     for relative in HTML_FILES:
         text = relative.read_text(encoding="utf-8")
         page = relative.relative_to(SITE_ROOT)
@@ -454,8 +454,8 @@ def main() -> int:
             vision_text,
             '<section class="section white">',
             '<figure class="editorial-photo vision-sky-photo">\n'
-            '        <img src="/assets/images/editorial-summer-sky-banner-20260716.jpg" width="2048" height="626" alt="強い日差しの下に青空と白い雲が広がる風景" loading="lazy" decoding="async">\n'
-            "      </figure>",
+            '          <img src="/assets/images/editorial-summer-sky-banner-20260716.jpg" width="2048" height="626" alt="強い日差しの下に青空と白い雲が広がる風景" loading="lazy" decoding="async">\n'
+            "        </figure>",
         ),
     )
     for page, page_text, section_start, markup in expected_editorial_photos:
@@ -494,13 +494,18 @@ def main() -> int:
     if re.search(r"\.editorial-photo\s+figcaption\s*\{", styles_text):
         errors.append("styles.css: obsolete editorial photo caption styling remains")
     if not re.search(
-        r"\.editorial-photo\s*\{[^}]*\bposition:\s*relative\s*;[^}]*"
-        r"\bleft:\s*50%\s*;[^}]*\bwidth:\s*calc\(100vw\s*-\s*clamp\(28px,\s*3vw,\s*48px\)\)\s*;[^}]*"
-        r"\bmax-width:\s*none\s*;[^}]*\btransform:\s*translateX\(-50%\)\s*;",
+        r"\.editorial-photo\s*\{[^}]*\bwidth:\s*100%\s*;[^}]*"
+        r"\bmax-width:\s*var\(--content\)\s*;[^}]*\bmargin:\s*34px\s+auto\s+0\s*;",
         styles_text,
         re.DOTALL,
     ):
-        errors.append("styles.css: viewport-wide editorial banner layout is missing")
+        errors.append("styles.css: content-width editorial banner layout is missing")
+    editorial_container_rule = re.search(r"\.editorial-photo\s*\{([^}]*)\}", styles_text, re.DOTALL)
+    if editorial_container_rule and re.search(
+        r"\b(?:left|right|transform)\s*:|\bwidth\s*:[^;]*\b(?:vw|dvw)\b",
+        editorial_container_rule.group(1),
+    ):
+        errors.append("styles.css: editorial banners must not break out to viewport width")
     for page, page_text in (("index.html", home_text), ("about/index.html", about_text), ("vision/index.html", vision_text)):
         if "AI生成イメージ" in page_text:
             errors.append(f"{page}: obsolete AI-generated image annotation remains")
