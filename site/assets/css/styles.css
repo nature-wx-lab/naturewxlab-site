@@ -1035,6 +1035,10 @@ main {
   gap: 44px;
 }
 
+.vision-now-layout .content-block {
+  margin-top: -14px;
+}
+
 .content-block {
   max-width: var(--measure);
 }
@@ -1578,6 +1582,10 @@ main {
 
   .continuity-layout {
     gap: 20px;
+  }
+
+  .vision-now-layout .content-block {
+    margin-top: 0;
   }
 
   .guide-view-grid {

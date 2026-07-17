@@ -417,7 +417,7 @@ def main() -> int:
     expected_brand_icon = '<img src="/assets/icons/naturewxlab-icon.png" width="54" height="54" alt="" aria-hidden="true">'
     expected_favicon = '<link rel="icon" href="/assets/icons/naturewxlab-icon.png" type="image/png">'
     expected_apple_touch = '<link rel="apple-touch-icon" href="/assets/icons/naturewxlab-icon.png">'
-    expected_stylesheet = '<link rel="stylesheet" href="/assets/css/styles.css?v=20260717-3">'
+    expected_stylesheet = '<link rel="stylesheet" href="/assets/css/styles.css?v=20260717-4">'
     for relative in HTML_FILES:
         text = relative.read_text(encoding="utf-8")
         page = relative.relative_to(SITE_ROOT)
@@ -1179,6 +1179,8 @@ def main() -> int:
             errors.append(f"vision/index.html: rejected or obsolete Vision copy remains: {forbidden_copy}")
     if vision_text.count("自然を楽しむすべての人") != 1:
         errors.append("vision/index.html: inclusive long-term audience wording must appear exactly once")
+    if vision_text.count('<div class="section-inner two-column vision-now-layout">') != 1:
+        errors.append("vision/index.html: dedicated NOW alignment layout is missing or duplicated")
 
     vision_css_contracts = (
         (
@@ -1215,6 +1217,15 @@ def main() -> int:
         (
             r"\.continuity-heading\s+h2\s+span\s*\{[^}]*\bwhite-space:\s*nowrap\s*;",
             "natural continuity heading wrap",
+        ),
+        (
+            r"\.vision-now-layout\s+\.content-block\s*\{[^}]*\bmargin-top:\s*-14px\s*;",
+            "desktop NOW visual alignment",
+        ),
+        (
+            r"@media\s*\(max-width:\s*880px\)(?:(?!@media).)*"
+            r"\.vision-now-layout\s+\.content-block\s*\{[^}]*\bmargin-top:\s*0\s*;",
+            "mobile NOW alignment reset",
         ),
         (
             r"@media\s*\(max-width:\s*560px\)(?:(?!@media).)*"
