@@ -1176,6 +1176,102 @@ main {
   color: var(--muted);
 }
 
+.vision-future-heading {
+  max-width: 900px;
+}
+
+.vision-roadmap {
+  max-width: 940px;
+  margin-left: 20px;
+}
+
+.vision-roadmap li {
+  min-height: 84px;
+  padding: 0 0 38px 52px;
+}
+
+.vision-roadmap li::before {
+  display: none;
+}
+
+.vision-roadmap .timeline-number {
+  position: absolute;
+  top: -8px;
+  left: -21px;
+  display: inline-flex;
+  width: 40px;
+  height: 32px;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgba(36, 114, 93, 0.28);
+  border-radius: 999px;
+  background: var(--paper);
+  color: var(--leaf-dark);
+  font-size: 12px;
+  font-weight: 850;
+  letter-spacing: 0.08em;
+  line-height: 1;
+}
+
+.vision-roadmap h3 {
+  margin: 0 0 6px;
+  color: var(--ink);
+  font-size: 1.12rem;
+  line-height: 1.55;
+}
+
+.vision-roadmap .timeline-goal {
+  padding-bottom: 0;
+}
+
+.vision-roadmap .timeline-goal .timeline-number {
+  border-color: var(--leaf);
+  background: var(--leaf);
+  color: #fff;
+}
+
+.vision-roadmap .timeline-goal .timeline-body {
+  padding: 22px 24px;
+  border: 1px solid rgba(36, 114, 93, 0.26);
+  border-radius: var(--radius);
+  background: linear-gradient(135deg, #ffffff, #edf7f2);
+}
+
+.continuity-section {
+  padding-block: 56px;
+  border-block: 1px solid var(--line);
+  background: var(--mist-strong);
+}
+
+.continuity-layout {
+  display: grid;
+  align-items: start;
+  grid-template-columns: minmax(280px, 0.8fr) minmax(0, 1.2fr);
+  gap: 48px;
+}
+
+.continuity-heading {
+  display: grid;
+  gap: 10px;
+}
+
+.continuity-heading h2 {
+  margin: 0;
+  font-size: clamp(1.65rem, 3.4vw, 2.25rem);
+  line-height: 1.35;
+  letter-spacing: -0.025em;
+}
+
+.continuity-heading h2 span {
+  white-space: nowrap;
+}
+
+.continuity-layout > p {
+  margin: 2px 0 0;
+  color: var(--ink-soft);
+  line-height: 1.9;
+}
+
 .policy-grid {
   display: grid;
   gap: 18px;
@@ -1475,8 +1571,13 @@ main {
   .tools-grid,
   .two-column,
   .vision-panel,
+  .continuity-layout,
   .footer-compact {
     grid-template-columns: 1fr;
+  }
+
+  .continuity-layout {
+    gap: 20px;
   }
 
   .guide-view-grid {
@@ -1665,6 +1766,35 @@ main {
 
   .vision-panel {
     padding: 20px;
+  }
+
+  .vision-roadmap li {
+    min-height: 0;
+    padding: 0 0 32px 46px;
+  }
+
+  .vision-roadmap .timeline-number {
+    left: -18px;
+    width: 34px;
+    height: 30px;
+    font-size: 11px;
+  }
+
+  .vision-roadmap h3 {
+    font-size: 1.02rem;
+    line-height: 1.55;
+  }
+
+  .vision-roadmap .timeline-goal .timeline-body {
+    padding: 18px;
+  }
+
+  .continuity-section {
+    padding-block: 46px;
+  }
+
+  .continuity-heading h2 {
+    font-size: clamp(1.5rem, 6.7vw, 1.75rem);
   }
 
   .about-questions {

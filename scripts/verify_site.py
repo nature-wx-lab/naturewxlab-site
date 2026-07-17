@@ -417,7 +417,7 @@ def main() -> int:
     expected_brand_icon = '<img src="/assets/icons/naturewxlab-icon.png" width="54" height="54" alt="" aria-hidden="true">'
     expected_favicon = '<link rel="icon" href="/assets/icons/naturewxlab-icon.png" type="image/png">'
     expected_apple_touch = '<link rel="apple-touch-icon" href="/assets/icons/naturewxlab-icon.png">'
-    expected_stylesheet = '<link rel="stylesheet" href="/assets/css/styles.css?v=20260717-2">'
+    expected_stylesheet = '<link rel="stylesheet" href="/assets/css/styles.css?v=20260717-3">'
     for relative in HTML_FILES:
         text = relative.read_text(encoding="utf-8")
         page = relative.relative_to(SITE_ROOT)
@@ -1074,6 +1074,161 @@ def main() -> int:
     for page, page_text, markup in expected_wide_ledes:
         if page_text.count(markup) != 1:
             errors.append(f"{page}: full-width hero copy is missing or duplicated")
+
+    expected_vision_meta = (
+        '<meta name="description" content="NatureWxLabの現在地と、情報・ツールから学び・交流、'
+        'リアルな体験、自然の交流拠点へ育てていく将来構想を紹介します。">'
+    )
+    if vision_text.count(expected_vision_meta) != 1:
+        errors.append("vision/index.html: current roadmap meta description is missing or duplicated")
+
+    expected_vision_fragments = (
+        '<p class="eyebrow">NOW</p>\n          <h2>今は、情報とツールの拠点を育てています</h2>',
+        '<div class="section-heading vision-future-heading"><p class="eyebrow">FUTURE</p>'
+        '<h2 id="future-title">描いている将来への道のり</h2>'
+        '<p>今ある「情報とツールの拠点」を起点に、経験と知恵が集まり、交流が生まれ、'
+        '画面の外へ体験が広がっていく——NatureWxLabが長い時間をかけて目指す道のりです。</p></div>',
+        '<div class="continuity-heading"><p class="eyebrow">CONTINUITY</p>'
+        '<h2 id="continuity-title">この道のりを支える、<span>継続の仕組み</span></h2></div>',
+        '<p>寄せられた声や応援、得られた支援・収益を、次の記事、検証、ツール、動画、'
+        '交流や体験づくりへ還元します。無料の情報を入口として守りながら、活動を無理なく、長く育てます。</p>',
+        '<div><p class="eyebrow">PROMISE</p><h2 id="promise-title">大きな夢も、足元の検証から。</h2>'
+        '<p>現在できていることと、これから実現したいことを分けて伝えます。安全性、わかりやすさ、'
+        'データの誠実な扱いを優先し、急がず育てます。</p></div><div class="section-actions">'
+        '<a class="button" href="/tools/">現在の公開ツールを見る</a></div>',
+    )
+    for fragment in expected_vision_fragments:
+        if vision_text.count(fragment) != 1:
+            errors.append("vision/index.html: required Vision roadmap copy is missing or duplicated")
+
+    expected_roadmap_items = (
+        '<li><span class="timeline-number">01</span><div class="timeline-body">'
+        '<h3>情報とツールの拠点を、使う人とともに育てる</h3>'
+        '<p>天気や気候を自然との暮らしへつなぐ無料ツール、記事、動画を積み重ねます。'
+        '寄せられた声を受け取り、検証と改善を重ねながら、必要な人が迷わず判断材料へたどり着ける土台を整えます。</p></div></li>',
+        '<li><span class="timeline-number">02</span><div class="timeline-body">'
+        '<h3>経験と地域の知恵が行き交う、オンラインの場へ</h3>'
+        '<p>公開ツールを共通のものさしに、園芸、メダカ、自然観察の工夫を持ち寄り、'
+        '地域や環境の違いを越えて互いに学び合えるコミュニティを育てます。</p></div></li>',
+        '<li><span class="timeline-number">03</span><div class="timeline-body">'
+        '<h3>画面の外へ、出会いと体験を広げる</h3>'
+        '<p>植物やメダカ、道具と実際に出会える店や、地域を越えて参加できるイベントなど、'
+        'オンラインで生まれた学びやつながりを、リアルな体験へ広げます。</p></div></li>',
+        '<li class="timeline-goal"><span class="timeline-number">04</span><div class="timeline-body">'
+        '<h3>オンラインとリアルを結ぶ、自然の交流拠点へ</h3>'
+        '<p>植物やメダカをはじめ、自然を楽しむすべての人が、地域や経験の違いを越えてつながる場所へ。'
+        '情報や知恵を学び合い、実物との出会いや新しい活動も生まれる、「街」のような交流拠点を目指します。</p></div></li>',
+    )
+    roadmap_start = vision_text.find('<ol class="timeline vision-roadmap">')
+    roadmap_end = vision_text.find("</ol>", roadmap_start)
+    if roadmap_start < 0 or roadmap_end < 0:
+        errors.append("vision/index.html: numbered Vision roadmap is missing")
+        roadmap_text = ""
+    else:
+        roadmap_text = vision_text[roadmap_start : roadmap_end + len("</ol>")]
+        if roadmap_text.count("<li") != 4:
+            errors.append("vision/index.html: Vision roadmap must contain exactly four stages")
+        if re.findall(r'<span class="timeline-number">(\d{2})</span>', roadmap_text) != [
+            "01",
+            "02",
+            "03",
+            "04",
+        ]:
+            errors.append("vision/index.html: Vision roadmap numbers must be visible and ordered 01-04")
+        if roadmap_text.count('class="timeline-goal"') != 1:
+            errors.append("vision/index.html: only the final Vision roadmap stage may be highlighted")
+        item_positions = [roadmap_text.find(item) for item in expected_roadmap_items]
+        if any(position < 0 for position in item_positions) or item_positions != sorted(item_positions):
+            errors.append("vision/index.html: Vision roadmap stage copy or ordering changed")
+
+    continuity_markup = '<section class="section continuity-section" aria-labelledby="continuity-title">'
+    continuity_start = vision_text.find(continuity_markup)
+    continuity_end = vision_text.find("</section>", continuity_start)
+    promise_start = vision_text.find(
+        '<section class="section white" aria-labelledby="promise-title">'
+    )
+    if not (roadmap_end >= 0 and roadmap_end < continuity_start < continuity_end < promise_start):
+        errors.append("vision/index.html: CONTINUITY must remain independent between FUTURE and PROMISE")
+    elif any(
+        marker in vision_text[continuity_start:continuity_end]
+        for marker in ("<ol", "timeline-number", 'class="timeline', ">05<")
+    ):
+        errors.append("vision/index.html: CONTINUITY must not become a fifth roadmap stage")
+
+    for forbidden_copy in (
+        "今は、情報の拠点を育てています",
+        "描いている将来構想",
+        "以下は実現済みのサービスではありません",
+        "活動が次の活動を支える循環をつくる",
+        "01は現在取り組んでいる段階",
+        "02〜04は長期構想",
+    ):
+        if forbidden_copy in vision_text:
+            errors.append(f"vision/index.html: rejected or obsolete Vision copy remains: {forbidden_copy}")
+    if vision_text.count("自然を楽しむすべての人") != 1:
+        errors.append("vision/index.html: inclusive long-term audience wording must appear exactly once")
+
+    vision_css_contracts = (
+        (
+            r"\.vision-roadmap\s*\{[^}]*\bmax-width:\s*940px\s*;[^}]*"
+            r"\bmargin-left:\s*20px\s*;",
+            "roadmap width and line alignment",
+        ),
+        (
+            r"\.vision-roadmap\s+li::before\s*\{[^}]*\bdisplay:\s*none\s*;",
+            "single numbered roadmap marker",
+        ),
+        (
+            r"\.vision-roadmap\s+\.timeline-number\s*\{[^}]*\bposition:\s*absolute\s*;[^}]*"
+            r"\bleft:\s*-21px\s*;[^}]*\bdisplay:\s*inline-flex\s*;[^}]*"
+            r"\balign-items:\s*center\s*;[^}]*\bjustify-content:\s*center\s*;",
+            "visible centered roadmap numbers",
+        ),
+        (
+            r"\.vision-roadmap\s+\.timeline-goal\s+\.timeline-body\s*\{[^}]*"
+            r"\bborder:\s*1px\s+solid\s+rgba\(36,\s*114,\s*93,\s*0\.26\)\s*;[^}]*"
+            r"\bbackground:\s*linear-gradient\(",
+            "restrained final-stage emphasis",
+        ),
+        (
+            r"\.continuity-section\s*\{[^}]*\bborder-block:\s*1px\s+solid\s+var\(--line\)\s*;"
+            r"[^}]*\bbackground:\s*var\(--mist-strong\)\s*;",
+            "independent continuity band",
+        ),
+        (
+            r"\.continuity-layout\s*\{[^}]*\bdisplay:\s*grid\s*;[^}]*"
+            r"\bgrid-template-columns:\s*minmax\(280px,\s*0\.8fr\)\s+minmax\(0,\s*1\.2fr\)\s*;",
+            "desktop continuity layout",
+        ),
+        (
+            r"\.continuity-heading\s+h2\s+span\s*\{[^}]*\bwhite-space:\s*nowrap\s*;",
+            "natural continuity heading wrap",
+        ),
+        (
+            r"@media\s*\(max-width:\s*560px\)(?:(?!@media).)*"
+            r"\.vision-roadmap\s+li\s*\{[^}]*\bpadding:\s*0\s+0\s+32px\s+46px\s*;"
+            r"(?:(?!@media).)*\.vision-roadmap\s+\.timeline-number\s*\{[^}]*"
+            r"\bleft:\s*-18px\s*;",
+            "mobile roadmap width",
+        ),
+    )
+    for pattern, label in vision_css_contracts:
+        if not re.search(pattern, styles_text, re.DOTALL):
+            errors.append(f"styles.css: missing {label}")
+    goal_rule = re.search(
+        r"\.vision-roadmap\s+\.timeline-goal\s+\.timeline-body\s*\{([^}]*)\}",
+        styles_text,
+        re.DOTALL,
+    )
+    if goal_rule is None or "box-shadow" in goal_rule.group(1):
+        errors.append("styles.css: final Vision stage must use restrained emphasis without shadow")
+    if not re.search(
+        r"@media\s*\(max-width:\s*880px\)(?:(?!@media).)*\.continuity-layout,"
+        r"(?:(?!@media).)*\bgrid-template-columns:\s*1fr\s*;",
+        styles_text,
+        re.DOTALL,
+    ):
+        errors.append("styles.css: mobile continuity layout must use one column")
 
     about_intro = re.search(
         r'<div class="page-lede page-lede-wide page-intro">(.*?)</div>',
