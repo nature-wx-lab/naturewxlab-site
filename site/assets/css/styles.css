@@ -1045,6 +1045,18 @@ main {
   margin-top: -14px;
 }
 
+.vision-now-layout {
+  grid-template-columns: minmax(0, 1fr) 300px;
+  gap: 36px;
+}
+
+.vision-now-layout .content-block h2 {
+  max-width: none;
+  font-size: clamp(1.45rem, 2.2vw, 2rem);
+  letter-spacing: -0.04em;
+  white-space: nowrap;
+}
+
 .content-block {
   max-width: var(--measure);
 }
@@ -1625,6 +1637,12 @@ main {
 
   .vision-now-layout .content-block {
     margin-top: 0;
+  }
+
+  .vision-now-layout .content-block h2 {
+    font-size: clamp(1.75rem, 6.5vw, 2.15rem);
+    letter-spacing: -0.025em;
+    white-space: normal;
   }
 
   .guide-view-grid {

@@ -417,7 +417,7 @@ def main() -> int:
     expected_brand_icon = '<img src="/assets/icons/naturewxlab-icon.png" width="54" height="54" alt="" aria-hidden="true">'
     expected_favicon = '<link rel="icon" href="/assets/icons/naturewxlab-icon.png" type="image/png">'
     expected_apple_touch = '<link rel="apple-touch-icon" href="/assets/icons/naturewxlab-icon.png">'
-    expected_stylesheet = '<link rel="stylesheet" href="/assets/css/styles.css?v=20260717-7">'
+    expected_stylesheet = '<link rel="stylesheet" href="/assets/css/styles.css?v=20260717-8">'
     for relative in HTML_FILES:
         text = relative.read_text(encoding="utf-8")
         page = relative.relative_to(SITE_ROOT)
@@ -1100,7 +1100,13 @@ def main() -> int:
             errors.append("vision/index.html: current social description is missing or duplicated")
 
     expected_vision_fragments = (
-        '<p class="eyebrow">NOW</p>\n          <h2>今は、情報とツールの拠点を育てています</h2>',
+        '<p class="eyebrow">NOW</p>\n          <h2>今は、地道な発信とツールづくりを積み重ねています</h2>',
+        '<p>NatureWxLabの現在の中心は、天気と自然を結ぶ無料の公開ツール、noteの記事、Xでの日々の発信、'
+        'Instagramの写真・短い動画、YouTubeでの実演です。</p>',
+        '<p>まずは、役立つ情報を継続して届け、実際に試し、寄せられた声を受け取りながら、検証と改善を積み重ねます。'
+        '必要な人が迷わず情報や判断材料へたどり着ける状態を、一つずつ整えていきます。</p>',
+        '<p>公式HPは、それぞれの活動を一つにつなぐ総合入口です。ここですべてを完結させるのではなく、'
+        '知りたいことに合う場所を選べる道しるべを目指します。</p>',
         '<div class="section-heading vision-future-heading"><p class="eyebrow">FUTURE</p>'
         '<h2 id="future-title">描いている将来への道のり</h2>'
         '<p>地道な情報発信から、頼られるブランドへ。そこで生まれた信頼とつながりをリアルな体験へ広げ、'
@@ -1236,9 +1242,18 @@ def main() -> int:
             "desktop NOW visual alignment",
         ),
         (
+            r"\.vision-now-layout\s+\.content-block\s+h2\s*\{[^}]*\bwhite-space:\s*nowrap\s*;",
+            "single-line desktop NOW title",
+        ),
+        (
             r"@media\s*\(max-width:\s*880px\)(?:(?!@media).)*"
             r"\.vision-now-layout\s+\.content-block\s*\{[^}]*\bmargin-top:\s*0\s*;",
             "mobile NOW alignment reset",
+        ),
+        (
+            r"@media\s*\(max-width:\s*880px\)(?:(?!@media).)*"
+            r"\.vision-now-layout\s+\.content-block\s+h2\s*\{[^}]*\bwhite-space:\s*normal\s*;",
+            "mobile NOW title wrap reset",
         ),
         (
             r"@media\s*\(max-width:\s*560px\)(?:(?!@media).)*"
