@@ -1199,7 +1199,7 @@ main {
 }
 
 .vision-future-heading {
-  max-width: 980px;
+  max-width: none;
 }
 
 .vision-future-heading > p:last-child {
@@ -1207,7 +1207,7 @@ main {
 }
 
 .vision-roadmap {
-  max-width: 940px;
+  max-width: none;
   margin-left: 20px;
 }
 
