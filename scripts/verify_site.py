@@ -417,7 +417,7 @@ def main() -> int:
     expected_brand_icon = '<img src="/assets/icons/naturewxlab-icon.png" width="54" height="54" alt="" aria-hidden="true">'
     expected_favicon = '<link rel="icon" href="/assets/icons/naturewxlab-icon.png" type="image/png">'
     expected_apple_touch = '<link rel="apple-touch-icon" href="/assets/icons/naturewxlab-icon.png">'
-    expected_stylesheet = '<link rel="stylesheet" href="/assets/css/styles.css?v=20260717-6">'
+    expected_stylesheet = '<link rel="stylesheet" href="/assets/css/styles.css?v=20260717-7">'
     for relative in HTML_FILES:
         text = relative.read_text(encoding="utf-8")
         page = relative.relative_to(SITE_ROOT)
@@ -1103,13 +1103,14 @@ def main() -> int:
         '<p class="eyebrow">NOW</p>\n          <h2>今は、情報とツールの拠点を育てています</h2>',
         '<div class="section-heading vision-future-heading"><p class="eyebrow">FUTURE</p>'
         '<h2 id="future-title">描いている将来への道のり</h2>'
-        '<p>今ある「情報とツールの拠点」を起点に、経験と知恵が集まり、オンライン上の街と'
-        'リアルな体験・交流の両方へ<span class="vision-future-keep">広がっていく</span>'
-        '——NatureWxLabが長い時間をかけて目指す道のりです。</p></div>',
+        '<p>地道な情報発信から、頼られるブランドへ。そこで生まれた信頼とつながりをリアルな体験へ広げ、'
+        'やがて、住んでいる場所を越えて自然を楽しむ人が集う「街」へ——。</p>'
+        '<p>NatureWxLabが、長い時間をかけて目指している成長の道のりです。</p></div>',
         '<div class="continuity-heading"><p class="eyebrow">CONTINUITY</p>'
         '<h2 id="continuity-title">この道のりを支える、<span>継続の仕組み</span></h2></div>',
-        '<p>寄せられた声や応援、得られた支援・収益を、次の記事、検証、ツール、動画、'
-        '交流や体験づくりへ還元します。無料の情報を入口として守りながら、活動を無理なく、長く育てます。</p>',
+        '<div class="continuity-copy"><p>寄せられた声や応援、活動から得られた支援・収益を、次の記事、検証、'
+        'ツール、動画、イベント、交流の場づくりへ還元します。</p><p>無料の情報を大切な入口として守りながら、'
+        '一つひとつの活動が次の活動を支え、NatureWxLab全体が無理なく成長していく仕組みを育てます。</p></div>',
         '<div><p class="eyebrow">PROMISE</p><h2 id="promise-title">大きな夢も、足元の検証から。</h2>'
         '<p>現在できていることと、これから実現したいことを分けて伝えます。安全性、わかりやすさ、'
         'データの誠実な扱いを優先し、急がず育てます。</p></div><div class="section-actions">'
@@ -1121,25 +1122,26 @@ def main() -> int:
 
     expected_roadmap_items = (
         '<li><span class="timeline-number">01</span><div class="timeline-body">'
-        '<h3>情報とツールの拠点を、使う人とともに育てる</h3>'
-        '<p>天気や気候を自然との暮らしへつなぐ無料ツール、記事、動画を積み重ねます。'
-        '寄せられた声を受け取り、検証と改善を重ねながら、必要な人が迷わず判断材料へたどり着ける土台を整えます。</p></div></li>',
+        '<h3>地道な発信を積み重ねる</h3><p>まずは、今できることを一つずつ。</p>'
+        '<p>天気、植物、園芸、メダカを毎日の暮らしや判断につなぐ記事、動画、無料ツールを地道に届けます。'
+        '実際に試し、寄せられた声を受け取り、検証と改善を重ねながら、NatureWxLabの土台を育てます。</p></div></li>',
         '<li><span class="timeline-number">02</span><div class="timeline-body">'
-        '<h3>アバターで集い、活動できるオンライン上の街へ</h3>'
-        '<p>距離や時間、生活上の事情でリアルに集まりにくい人も、自分の分身となるアバターで参加できる、'
-        '仮想世界（メタバース）の「オンライン上の街」を構想しています。植物、メダカ、天気、自然をテーマにした'
-        '施設やイベントで、経験や情報を直接共有し、お気に入りの一品や一匹を見つけたり、'
-        '交換したりできる場所を目指します。</p></div></li>',
+        '<h3>信頼され、頼られるブランドを築く</h3><p>発信と実績を積み重ね、</p>'
+        '<p class="roadmap-quote"><strong>「植物やメダカ、天気のことなら、まずNatureWxLabを見てみよう」</strong></p>'
+        '<p>と思い出してもらえる存在を目指します。</p><p>情報を探している人、育て方に迷っている人、'
+        '天気を自然との暮らしに生かしたい人が、安心して立ち寄り、判断のよりどころにできるブランドを育てます。</p></div></li>',
         '<li><span class="timeline-number">03</span><div class="timeline-body">'
-        '<h3>リアルな場へ、出会いと体験を広げる</h3>'
-        '<p>自然観察、園芸やメダカの体験、地域イベント、対面での交流、植物やメダカ、'
-        '道具と実際に出会える場を育てます。オンラインだけで完結させず、同じ場所で見て、'
-        '触れて、語り合う時間も大切にします。</p></div></li>',
+        '<h3>発信から、リアルな出会いと体験へ</h3><p>オンラインで生まれた信頼やつながりを、画面の外へ広げます。</p>'
+        '<p>自然観察会、園芸やメダカのイベント、展示、販売会、ワークショップなど、人と自然、人と人が直接出会える機会を企画します。</p>'
+        '<p>活動の輪がさらに広がった先には、植物やメダカ、自然に関する道具と実際に出会い、語り合い、体験できる店舗やリアルな交流拠点も検討します。</p></div></li>',
         '<li class="timeline-goal"><span class="timeline-number">04</span><div class="timeline-body">'
-        '<h3>仮想の街とリアルな場がつながる、自然の交流拠点へ</h3>'
-        '<p>リアルな体験と交流を大切にしながら、距離や事情を越えて誰もが参加できるオンライン上の街も育てていく。'
-        '仮想と現実、二つの場所がつながることで、植物やメダカをはじめ、自然を楽しむすべての人の交流をもっと広く、'
-        'もっと身近なものにします。</p></div></li>',
+        '<h3>リアルとオンラインを結ぶ、「自然の街」へ</h3><p>さらに多くの人が、住んでいる場所や生活環境にかかわらず交流できるよう、'
+        '園芸、農業、植物、メダカ、天気など、<strong>「自然」への関心を共通点にしたオンライン上の街</strong>を構想しています。</p>'
+        '<p>自分の分身となるアバターを通じて、全国や世界の人とリアルタイムにつながり、育て方や経験を教え合い、情報を共有する。'
+        '大切に育てた植物やメダカを紹介し合い、適切な仕組みのもとで交換や販売もできる。</p>'
+        '<p>オンライン上の街で生まれたつながりが、リアルなイベントや店舗へ広がり、リアルな体験が再びオンラインへ持ち寄られる。</p>'
+        '<p>そんなふうに現実と仮想の場所が行き来しながら、自然を楽しむ人たちが自由につながり、学び合い、'
+        '今よりもっと自然を楽しめる世界を目指します。</p></div></li>',
     )
     roadmap_start = vision_text.find('<ol class="timeline vision-roadmap">')
     roadmap_end = vision_text.find("</ol>", roadmap_start)
@@ -1187,8 +1189,8 @@ def main() -> int:
     ):
         if forbidden_copy in vision_text:
             errors.append(f"vision/index.html: rejected or obsolete Vision copy remains: {forbidden_copy}")
-    if vision_text.count("自然を楽しむすべての人") != 1:
-        errors.append("vision/index.html: inclusive long-term audience wording must appear exactly once")
+    if vision_text.count("自然を楽しむ人") < 2:
+        errors.append("vision/index.html: inclusive long-term audience wording is missing")
     if vision_text.count('<div class="section-inner two-column vision-now-layout">') != 1:
         errors.append("vision/index.html: dedicated NOW alignment layout is missing or duplicated")
 
@@ -1215,14 +1217,15 @@ def main() -> int:
             "restrained final-stage emphasis",
         ),
         (
-            r"\.continuity-section\s*\{[^}]*\bborder-block:\s*1px\s+solid\s+var\(--line\)\s*;"
-            r"[^}]*\bbackground:\s*var\(--mist-strong\)\s*;",
-            "independent continuity band",
+            r"\.continuity-section\s*\{[^}]*\bpadding-block:\s*0\s+72px\s*;[^}]*"
+            r"\bbackground:\s*var\(--mist\)\s*;",
+            "integrated continuity section",
         ),
         (
-            r"\.continuity-layout\s*\{[^}]*\bdisplay:\s*grid\s*;[^}]*"
-            r"\bgrid-template-columns:\s*minmax\(280px,\s*0\.8fr\)\s+minmax\(0,\s*1\.2fr\)\s*;",
-            "desktop continuity layout",
+            r"\.continuity-layout\s*\{[^}]*\bmax-width:\s*940px\s*;[^}]*"
+            r"\bborder-left:\s*4px\s+solid\s+var\(--leaf\)\s*;[^}]*"
+            r"\bbackground:\s*linear-gradient\([^}]*\bgrid-template-columns:\s*1fr\s*;",
+            "timeline-aligned continuity panel",
         ),
         (
             r"\.continuity-heading\s+h2\s+span\s*\{[^}]*\bwhite-space:\s*nowrap\s*;",
@@ -1231,10 +1234,6 @@ def main() -> int:
         (
             r"\.vision-now-layout\s+\.content-block\s*\{[^}]*\bmargin-top:\s*-14px\s*;",
             "desktop NOW visual alignment",
-        ),
-        (
-            r"\.vision-future-keep\s*\{[^}]*\bwhite-space:\s*nowrap\s*;",
-            "complete future phrase wrap",
         ),
         (
             r"@media\s*\(max-width:\s*880px\)(?:(?!@media).)*"
