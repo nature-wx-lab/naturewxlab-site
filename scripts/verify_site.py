@@ -1076,18 +1076,26 @@ def main() -> int:
             errors.append(f"{page}: full-width hero copy is missing or duplicated")
 
     expected_vision_meta = (
-        '<meta name="description" content="NatureWxLabの現在地と、情報・ツールから学び・交流、'
-        'リアルな体験、自然の交流拠点へ育てていく将来構想を紹介します。">'
+        '<meta name="description" content="NatureWxLabの現在地と、アバターで集うオンライン上の街、'
+        'リアルな体験と交流を結び、自然を楽しむ人の交流を広げる将来構想を紹介します。">'
     )
     if vision_text.count(expected_vision_meta) != 1:
         errors.append("vision/index.html: current roadmap meta description is missing or duplicated")
+
+    expected_vision_social_descriptions = (
+        '<meta property="og:description" content="仮想と現実を結び、自然を楽しむ人がつながる場所へ。">',
+        '<meta name="twitter:description" content="仮想と現実を結び、自然を楽しむ人がつながる場所へ。">',
+    )
+    for markup in expected_vision_social_descriptions:
+        if vision_text.count(markup) != 1:
+            errors.append("vision/index.html: current social description is missing or duplicated")
 
     expected_vision_fragments = (
         '<p class="eyebrow">NOW</p>\n          <h2>今は、情報とツールの拠点を育てています</h2>',
         '<div class="section-heading vision-future-heading"><p class="eyebrow">FUTURE</p>'
         '<h2 id="future-title">描いている将来への道のり</h2>'
-        '<p>今ある「情報とツールの拠点」を起点に、経験と知恵が集まり、交流が生まれ、'
-        '画面の外へ体験が広がっていく——NatureWxLabが長い時間をかけて目指す道のりです。</p></div>',
+        '<p>今ある「情報とツールの拠点」を起点に、経験と知恵が集まり、オンライン上の街と'
+        'リアルな体験・交流の両方へ広がっていく——NatureWxLabが長い時間をかけて目指す道のりです。</p></div>',
         '<div class="continuity-heading"><p class="eyebrow">CONTINUITY</p>'
         '<h2 id="continuity-title">この道のりを支える、<span>継続の仕組み</span></h2></div>',
         '<p>寄せられた声や応援、得られた支援・収益を、次の記事、検証、ツール、動画、'
@@ -1107,17 +1115,21 @@ def main() -> int:
         '<p>天気や気候を自然との暮らしへつなぐ無料ツール、記事、動画を積み重ねます。'
         '寄せられた声を受け取り、検証と改善を重ねながら、必要な人が迷わず判断材料へたどり着ける土台を整えます。</p></div></li>',
         '<li><span class="timeline-number">02</span><div class="timeline-body">'
-        '<h3>経験と地域の知恵が行き交う、オンラインの場へ</h3>'
-        '<p>公開ツールを共通のものさしに、園芸、メダカ、自然観察の工夫を持ち寄り、'
-        '地域や環境の違いを越えて互いに学び合えるコミュニティを育てます。</p></div></li>',
+        '<h3>アバターで集い、活動できるオンライン上の街へ</h3>'
+        '<p>距離や時間、生活上の事情でリアルに集まりにくい人も、自分の分身となるアバターで参加できる、'
+        '仮想世界（メタバース）の「オンライン上の街」を構想しています。植物、メダカ、天気、自然をテーマにした'
+        '施設やイベントで、経験や情報を直接共有し、お気に入りの一品や一匹を見つけたり、'
+        '交換したりできる場所を目指します。</p></div></li>',
         '<li><span class="timeline-number">03</span><div class="timeline-body">'
-        '<h3>画面の外へ、出会いと体験を広げる</h3>'
-        '<p>植物やメダカ、道具と実際に出会える店や、地域を越えて参加できるイベントなど、'
-        'オンラインで生まれた学びやつながりを、リアルな体験へ広げます。</p></div></li>',
+        '<h3>リアルな場へ、出会いと体験を広げる</h3>'
+        '<p>自然観察、園芸やメダカの体験、地域イベント、対面での交流、植物やメダカ、'
+        '道具と実際に出会える場を育てます。オンラインだけで完結させず、同じ場所で見て、'
+        '触れて、語り合う時間も大切にします。</p></div></li>',
         '<li class="timeline-goal"><span class="timeline-number">04</span><div class="timeline-body">'
-        '<h3>オンラインとリアルを結ぶ、自然の交流拠点へ</h3>'
-        '<p>植物やメダカをはじめ、自然を楽しむすべての人が、地域や経験の違いを越えてつながる場所へ。'
-        '情報や知恵を学び合い、実物との出会いや新しい活動も生まれる、「街」のような交流拠点を目指します。</p></div></li>',
+        '<h3>仮想の街とリアルな場がつながる、自然の交流拠点へ</h3>'
+        '<p>リアルな体験と交流を大切にしながら、距離や事情を越えて誰もが参加できるオンライン上の街も育てていく。'
+        '仮想と現実、二つの場所がつながることで、植物やメダカをはじめ、自然を楽しむすべての人の交流をもっと広く、'
+        'もっと身近なものにします。</p></div></li>',
     )
     roadmap_start = vision_text.find('<ol class="timeline vision-roadmap">')
     roadmap_end = vision_text.find("</ol>", roadmap_start)
