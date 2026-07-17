@@ -1184,6 +1184,10 @@ main {
   max-width: 900px;
 }
 
+.vision-future-keep {
+  white-space: nowrap;
+}
+
 .vision-roadmap {
   max-width: 940px;
   margin-left: 20px;

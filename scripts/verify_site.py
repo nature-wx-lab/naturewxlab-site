@@ -417,7 +417,7 @@ def main() -> int:
     expected_brand_icon = '<img src="/assets/icons/naturewxlab-icon.png" width="54" height="54" alt="" aria-hidden="true">'
     expected_favicon = '<link rel="icon" href="/assets/icons/naturewxlab-icon.png" type="image/png">'
     expected_apple_touch = '<link rel="apple-touch-icon" href="/assets/icons/naturewxlab-icon.png">'
-    expected_stylesheet = '<link rel="stylesheet" href="/assets/css/styles.css?v=20260717-4">'
+    expected_stylesheet = '<link rel="stylesheet" href="/assets/css/styles.css?v=20260717-5">'
     for relative in HTML_FILES:
         text = relative.read_text(encoding="utf-8")
         page = relative.relative_to(SITE_ROOT)
@@ -1095,7 +1095,8 @@ def main() -> int:
         '<div class="section-heading vision-future-heading"><p class="eyebrow">FUTURE</p>'
         '<h2 id="future-title">描いている将来への道のり</h2>'
         '<p>今ある「情報とツールの拠点」を起点に、経験と知恵が集まり、オンライン上の街と'
-        'リアルな体験・交流の両方へ広がっていく——NatureWxLabが長い時間をかけて目指す道のりです。</p></div>',
+        'リアルな体験・交流の両方へ<span class="vision-future-keep">広がっていく</span>'
+        '——NatureWxLabが長い時間をかけて目指す道のりです。</p></div>',
         '<div class="continuity-heading"><p class="eyebrow">CONTINUITY</p>'
         '<h2 id="continuity-title">この道のりを支える、<span>継続の仕組み</span></h2></div>',
         '<p>寄せられた声や応援、得られた支援・収益を、次の記事、検証、ツール、動画、'
@@ -1221,6 +1222,10 @@ def main() -> int:
         (
             r"\.vision-now-layout\s+\.content-block\s*\{[^}]*\bmargin-top:\s*-14px\s*;",
             "desktop NOW visual alignment",
+        ),
+        (
+            r"\.vision-future-keep\s*\{[^}]*\bwhite-space:\s*nowrap\s*;",
+            "complete future phrase wrap",
         ),
         (
             r"@media\s*\(max-width:\s*880px\)(?:(?!@media).)*"
