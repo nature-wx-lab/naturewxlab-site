@@ -417,7 +417,7 @@ def main() -> int:
     expected_brand_icon = '<img src="/assets/icons/naturewxlab-icon.png" width="54" height="54" alt="" aria-hidden="true">'
     expected_favicon = '<link rel="icon" href="/assets/icons/naturewxlab-icon.png" type="image/png">'
     expected_apple_touch = '<link rel="apple-touch-icon" href="/assets/icons/naturewxlab-icon.png">'
-    expected_stylesheet = '<link rel="stylesheet" href="/assets/css/styles.css?v=20260717-5">'
+    expected_stylesheet = '<link rel="stylesheet" href="/assets/css/styles.css?v=20260717-6">'
     for relative in HTML_FILES:
         text = relative.read_text(encoding="utf-8")
         page = relative.relative_to(SITE_ROOT)
@@ -824,16 +824,25 @@ def main() -> int:
     expected_tool_guide_intro = (
         '<p class="eyebrow">HOW TO CHOOSE</p>',
         '<h2 id="guide-title">「いつ」と「何を判断したいか」で、使い分ける。</h2>',
-        '<p>4つのツールは、判断の材料として役立つ情報がそれぞれ異なります。</p>',
-        '<p>一つの地点を深く見たいのか、周辺を含む地域を面で見たいのか。</p>',
-        '<p>過去から未来までの流れを追いたいのか、今日・明日の変化を知りたいのか。</p>',
-        '<p>「自分の地域や環境ならどうか」を判断するための根拠を提供します。</p>',
+        '<p>4つのツールは、判断の材料として役立つ情報がそれぞれ異なります。'
+        '一つの地点を深く見たいのか、周辺を含む地域を面で見たいのか。</p>',
+        '<p>過去から未来までの流れを追いたいのか、今日・明日の変化を知りたいのか。'
+        '「自分の地域や環境ならどうか」を判断するための根拠を提供します。</p>',
     )
     for markup in expected_tool_guide_intro:
         if tools_text.count(markup) != 1:
             errors.append(f"tools/index.html: required HOW TO CHOOSE intro is missing or duplicated: {markup}")
     if not re.search(r"\.tool-guide-intro\s*\{[^}]*\bmax-width:\s*none\s*;", styles_text, re.DOTALL):
         errors.append("styles.css: HOW TO CHOOSE intro must use the full section width")
+    if tools_text.count('<div class="tool-guide-lede">') != 1 or tools_text.count('<div class="tool-guide-lede">\n            <p>') != 1:
+        errors.append("tools/index.html: HOW TO CHOOSE lede must remain a single two-line group")
+    if not re.search(
+        r"@media\s*\(min-width:\s*1160px\)(?:(?!@media).)*"
+        r"\.tool-guide-lede\s+p\s*\{[^}]*\bwhite-space:\s*nowrap\s*;",
+        styles_text,
+        re.DOTALL,
+    ):
+        errors.append("styles.css: HOW TO CHOOSE desktop lede must keep each sentence pair on one line")
     expected_guide_views = (
         (
             "guide-view-card point-view",

@@ -634,6 +634,12 @@ main {
   line-height: 1.85;
 }
 
+@media (min-width: 1160px) {
+  .tool-guide-lede p {
+    white-space: nowrap;
+  }
+}
+
 .tool-guide-layout {
   display: grid;
   margin-top: 36px;
