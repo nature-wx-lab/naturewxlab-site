@@ -1109,7 +1109,7 @@ def main() -> int:
         '知りたいことに合う場所を選べる道しるべを目指します。</p>',
         '<div class="section-heading vision-future-heading"><p class="eyebrow">FUTURE</p>'
         '<h2 id="future-title">描いている将来への道のり</h2>'
-        '<p>地道な情報発信から、頼られるブランドへ。そこで生まれた信頼とつながりをリアルな体験へ広げ、'
+        '<p>地道な情報発信から、頼られるブランドへ。<br>そこで生まれた信頼とつながりをリアルな体験へ広げ、'
         'やがて、住んでいる場所を越えて自然を楽しむ人が集う「街」へ——。</p>'
         '<p>NatureWxLabが、長い時間をかけて目指している成長の道のりです。</p></div>',
         '<div class="continuity-heading"><p class="eyebrow">CONTINUITY</p>'
