@@ -417,7 +417,7 @@ def main() -> int:
     expected_brand_icon = '<img src="/assets/icons/naturewxlab-icon.png" width="54" height="54" alt="" aria-hidden="true">'
     expected_favicon = '<link rel="icon" href="/assets/icons/naturewxlab-icon.png" type="image/png">'
     expected_apple_touch = '<link rel="apple-touch-icon" href="/assets/icons/naturewxlab-icon.png">'
-    expected_stylesheet = '<link rel="stylesheet" href="/assets/css/styles.css?v=20260722-2">'
+    expected_stylesheet = '<link rel="stylesheet" href="/assets/css/styles.css?v=20260722-3">'
     for relative in HTML_FILES:
         text = relative.read_text(encoding="utf-8")
         page = relative.relative_to(SITE_ROOT)
@@ -1116,7 +1116,7 @@ def main() -> int:
         '<h2 id="continuity-title">この道のりを支える、<span>継続の仕組み</span></h2></div>',
         '<div class="continuity-copy"><p>寄せられた声や応援、活動から得られた支援・収益を、次の記事、検証、'
         'ツール、動画、イベント、交流の場づくりへ還元します。</p><p>無料の情報を大切な入口として守りながら、'
-        '一つひとつの活動が次の活動を支え、NatureWxLab全体が無理なく成長していく仕組みを育てます。</p></div>',
+        '一つひとつの活動が次の活動を支え、無理なく成長していく仕組みを育てます。</p></div>',
         '<div><p class="eyebrow">PROMISE</p><h2 id="promise-title">大きな夢も、足元の検証から。</h2>'
         '<p>現在できていることと、これから実現したいことを分けて伝えます。安全性、わかりやすさ、'
         'データの誠実な扱いを優先し、急がず育てます。</p></div><div class="section-actions">'
@@ -1248,7 +1248,7 @@ def main() -> int:
         ),
         (
             r"@media\s*\(min-width:\s*1160px\)(?:(?!@media).)*\.continuity-copy\s+p:last-child\s*\{"
-            r"[^}]*\bfont-size:\s*0\.9rem\s*;[^}]*\bwhite-space:\s*nowrap\s*;",
+            r"[^}]*\bwhite-space:\s*nowrap\s*;",
             "single-line desktop continuity closing copy",
         ),
         (
