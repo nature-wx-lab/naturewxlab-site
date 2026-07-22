@@ -42,6 +42,7 @@ REQUIRED_FILES = {
     "assets/images/og-image-20260722-v2.svg",
     "assets/images/og-image-20260722-v3.jpg",
     "assets/images/og-image-20260722-v3.svg",
+    "assets/images/og-image-20260722-v4.jpg",
     "assets/images/editorial-rose-garden-banner-20260716.jpg",
     "assets/images/editorial-medaka-pond-banner-20260716.jpg",
     "assets/images/editorial-summer-sky-banner-20260716.jpg",
@@ -248,6 +249,7 @@ def main() -> int:
         "assets/images/og-image.jpg": "9198c25cae29d01cdfaab1941c5095bad66627abd17003bedf6c04294e9ad35b",
         "assets/images/og-image-20260722-v2.jpg": "001a929d21288fc35688bf449ba4dccab6033f54f77cb9cb546462aeb28928e7",
         "assets/images/og-image-20260722-v3.jpg": "a6df2c3c0f6c2895991414fe1cf40cb71cfe76c362c8007b1e229f8fb699fc34",
+        "assets/images/og-image-20260722-v4.jpg": "41019369c9ea4dc1e69ec58bed943f2e652cc533b03c85ec5a344b3af60a7aed",
         "assets/images/editorial-rose-garden-banner-20260716.jpg": "b4faded810f7a6416a0c985324ebee3d902f0b6bb9072e9a8e8b87cf144295be",
         "assets/images/editorial-medaka-pond-banner-20260716.jpg": "b262dd031bf4c2ae230df2b7d60ccd01534817c89c98b82a89ad20e7bbedfb78",
         "assets/images/editorial-summer-sky-banner-20260716.jpg": "e8cc7c78ecbb04c621cb65c04a2106c429b2527eef355575a44a5fe337b2b27e",
@@ -272,7 +274,7 @@ def main() -> int:
         if jpeg_dimensions(payload) != (1425, 891):
             errors.append(f"{relative}: tool preview dimensions must be 1425x891")
 
-    social_preview = SITE_ROOT / "assets/images/og-image-20260722-v3.jpg"
+    social_preview = SITE_ROOT / "assets/images/og-image-20260722-v4.jpg"
     if social_preview.is_file():
         social_preview_payload = social_preview.read_bytes()
         if not social_preview_payload.startswith(b"\xff\xd8\xff"):
@@ -1552,7 +1554,7 @@ def main() -> int:
         text = (SITE_ROOT / relative).read_text(encoding="utf-8")
         if text.count(f'<link rel="canonical" href="{canonical}">') != 1:
             errors.append(f"{relative}: canonical URL is missing or duplicated")
-        if 'content="https://naturewxlab.com/assets/images/og-image-20260722-v3.jpg"' not in text:
+        if 'content="https://naturewxlab.com/assets/images/og-image-20260722-v4.jpg"' not in text:
             errors.append(f"{relative}: social preview image is missing")
 
     manifest = json.loads((SITE_ROOT / "site.webmanifest").read_text(encoding="utf-8"))
