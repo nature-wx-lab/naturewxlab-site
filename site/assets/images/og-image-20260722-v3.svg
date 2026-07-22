@@ -1,0 +1,63 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" role="img" aria-labelledby="title description">
+  <title id="title">NatureWxLab</title>
+  <desc id="description">気象予報士パパの自然研究所 NatureWxLab 天気を味方に、自然と暮らす</desc>
+  <defs>
+    <linearGradient id="sky" x1="0" x2="1" y1="0" y2="1">
+      <stop offset="0" stop-color="#f8fbf8"/>
+      <stop offset="0.48" stop-color="#edf6f2"/>
+      <stop offset="1" stop-color="#dceef2"/>
+    </linearGradient>
+    <linearGradient id="ground" x1="0" x2="1" y1="0" y2="0">
+      <stop offset="0" stop-color="#dceee4"/>
+      <stop offset="0.58" stop-color="#cee6dc"/>
+      <stop offset="1" stop-color="#bcdde2"/>
+    </linearGradient>
+    <radialGradient id="sunGlow" cx="50%" cy="50%" r="50%">
+      <stop offset="0" stop-color="#fff4bc" stop-opacity="0.82"/>
+      <stop offset="0.48" stop-color="#fff5c7" stop-opacity="0.3"/>
+      <stop offset="1" stop-color="#fff8dc" stop-opacity="0"/>
+    </radialGradient>
+    <filter id="panelShadow" x="-10%" y="-10%" width="120%" height="130%">
+      <feDropShadow dx="0" dy="12" stdDeviation="18" flood-color="#17483d" flood-opacity="0.08"/>
+    </filter>
+  </defs>
+
+  <rect width="1200" height="630" fill="url(#sky)"/>
+  <circle cx="1030" cy="70" r="250" fill="url(#sunGlow)"/>
+
+  <!-- Subtle wind and weather contours -->
+  <g fill="none" stroke="#67a1aa" stroke-linecap="round" opacity="0.18">
+    <path d="M650 74 C795 14 995 18 1165 92" stroke-width="2.5"/>
+    <path d="M672 108 C827 57 1005 64 1175 132" stroke-width="2"/>
+    <path d="M735 147 C869 109 1030 117 1188 174" stroke-width="1.8"/>
+  </g>
+
+  <!-- Layered landscape and water -->
+  <path d="M0 494 C142 442 290 464 414 503 C555 548 699 527 828 474 C953 424 1074 430 1200 472 L1200 630 L0 630 Z" fill="#e7f2ec"/>
+  <path d="M0 548 C166 496 338 523 486 561 C646 602 778 573 913 520 C1022 477 1117 487 1200 518 L1200 630 L0 630 Z" fill="url(#ground)" opacity="0.96"/>
+  <g fill="none" stroke="#ffffff" stroke-linecap="round" opacity="0.5">
+    <path d="M698 555 C824 530 972 531 1148 568" stroke-width="3"/>
+    <path d="M742 588 C884 564 1017 571 1180 603" stroke-width="2"/>
+  </g>
+
+  <!-- Reading panel -->
+  <rect x="50" y="34" width="705" height="530" rx="34" fill="#ffffff" fill-opacity="0.72" stroke="#ffffff" stroke-opacity="0.86" filter="url(#panelShadow)"/>
+
+  <text x="88" y="91" fill="#24725d" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif" font-size="28" font-weight="750" letter-spacing="3.2">NATURE × WEATHER × LIFE</text>
+  <rect x="86" y="112" width="385" height="46" rx="23" fill="#dfeee8"/>
+  <circle cx="112" cy="135" r="7" fill="#e3ad36"/>
+  <text x="130" y="144" fill="#315f53" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif" font-size="23" font-weight="700">気象予報士パパの自然研究所</text>
+
+  <text x="86" y="254" fill="#17352f" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif" font-size="72" font-weight="800">NatureWxLab</text>
+  <path d="M88 288 H660" stroke="#82ad9f" stroke-width="2" opacity="0.58"/>
+  <text x="86" y="366" fill="#17352f" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif" font-size="41" font-weight="760">天気を味方に、自然と暮らす</text>
+
+  <g fill="#5b746d" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif">
+    <text x="88" y="493" font-size="22" font-weight="650" letter-spacing="1">OFFICIAL WEBSITE</text>
+    <text x="88" y="530" font-size="27" font-weight="600">naturewxlab.com</text>
+  </g>
+
+  <!-- Brand mark -->
+  <circle cx="979" cy="298" r="208" fill="#ffffff" fill-opacity="0.38" stroke="#ffffff" stroke-opacity="0.58"/>
+  <image href="/assets/icons/naturewxlab-icon.png" x="770" y="88" width="418" height="418" preserveAspectRatio="xMidYMid meet"/>
+</svg>
