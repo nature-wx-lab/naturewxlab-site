@@ -433,7 +433,7 @@ def main() -> int:
         r'<footer class="site-footer">\s*<div class="footer-inner">\s*'
         r'<div class="footer-compact">\s*<div class="footer-identity">\s*'
         r'<div class="footer-brand">NatureWxLab</div>\s*'
-        r'<p>天気と自然を、毎日の判断につなぐ情報とツールを届けます。</p>\s*</div>\s*'
+        r'<p>天気を味方に、自然と暮らす知恵や体験を形にします。</p>\s*</div>\s*'
         r'<div class="footer-meta">\s*<span>© 2026 NatureWxLab</span>\s*'
         r'<button class="footer-link-button" type="button" data-analytics-settings>'
         r'アクセス解析の設定</button>\s*</div>\s*</div>\s*</div>\s*</footer>',
