@@ -417,7 +417,7 @@ def main() -> int:
     expected_brand_icon = '<img src="/assets/icons/naturewxlab-icon.png" width="54" height="54" alt="" aria-hidden="true">'
     expected_favicon = '<link rel="icon" href="/assets/icons/naturewxlab-icon.png" type="image/png">'
     expected_apple_touch = '<link rel="apple-touch-icon" href="/assets/icons/naturewxlab-icon.png">'
-    expected_stylesheet = '<link rel="stylesheet" href="/assets/css/styles.css?v=20260722-1">'
+    expected_stylesheet = '<link rel="stylesheet" href="/assets/css/styles.css?v=20260722-2">'
     for relative in HTML_FILES:
         text = relative.read_text(encoding="utf-8")
         page = relative.relative_to(SITE_ROOT)
@@ -1145,8 +1145,8 @@ def main() -> int:
         '交流できるリアルな拠点へと育てていきます。</p></div></li>',
         '<li class="timeline-goal"><span class="timeline-number">04</span><div class="timeline-body">'
         '<h3>リアルとオンラインを結ぶ、「自然の街」へ</h3>'
-        '<p>リアルな場で生まれたつながりを、住んでいる場所や生活環境にかかわらず、さらに多くの人へ広げます。</p>'
-        '<p>園芸、農業、メダカ飼育、天気、自然観察など、<strong>「自然」への関心を共通点に、'
+        '<p>リアルな場で生まれたつながりを、住んでいる場所や生活環境にかかわらず、さらに多くの人へ広げます。'
+        '園芸、農業、メダカ飼育、天気、自然観察など、<strong>「自然」への関心を共通点に、'
         '全国や世界の人が交流できるオンライン上の街</strong>を構想しています。</p>'
         '<p>そこでは、自分の分身となるアバターを通じてリアルタイムにつながり、育て方や経験を教え合い、情報を共有する。'
         '大切に育てた植物やメダカを紹介し合い、適切な仕組みのもとで交換や販売もできる——そんな交流の形を思い描いています。</p>'
@@ -1245,6 +1245,11 @@ def main() -> int:
         (
             r"\.continuity-heading\s+h2\s+span\s*\{[^}]*\bwhite-space:\s*nowrap\s*;",
             "natural continuity heading wrap",
+        ),
+        (
+            r"@media\s*\(min-width:\s*1160px\)(?:(?!@media).)*\.continuity-copy\s+p:last-child\s*\{"
+            r"[^}]*\bfont-size:\s*0\.9rem\s*;[^}]*\bwhite-space:\s*nowrap\s*;",
+            "single-line desktop continuity closing copy",
         ),
         (
             r"\.vision-now-layout\s+\.content-block\s*\{[^}]*\bmargin-top:\s*-14px\s*;",

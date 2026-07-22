@@ -1325,6 +1325,13 @@ main {
   line-height: 1.9;
 }
 
+@media (min-width: 1160px) {
+  .continuity-copy p:last-child {
+    font-size: 0.9rem;
+    white-space: nowrap;
+  }
+}
+
 .policy-grid {
   display: grid;
   gap: 18px;
