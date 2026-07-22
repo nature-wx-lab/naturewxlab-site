@@ -1287,7 +1287,7 @@ main {
 .continuity-layout {
   display: grid;
   align-items: start;
-  max-width: 940px;
+  max-width: none;
   margin-left: 20px;
   padding: 28px 30px;
   border: 1px solid rgba(36, 114, 93, 0.26);

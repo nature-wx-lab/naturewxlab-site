@@ -417,7 +417,7 @@ def main() -> int:
     expected_brand_icon = '<img src="/assets/icons/naturewxlab-icon.png" width="54" height="54" alt="" aria-hidden="true">'
     expected_favicon = '<link rel="icon" href="/assets/icons/naturewxlab-icon.png" type="image/png">'
     expected_apple_touch = '<link rel="apple-touch-icon" href="/assets/icons/naturewxlab-icon.png">'
-    expected_stylesheet = '<link rel="stylesheet" href="/assets/css/styles.css?v=20260718-1">'
+    expected_stylesheet = '<link rel="stylesheet" href="/assets/css/styles.css?v=20260722-1">'
     for relative in HTML_FILES:
         text = relative.read_text(encoding="utf-8")
         page = relative.relative_to(SITE_ROOT)
@@ -1129,17 +1129,18 @@ def main() -> int:
     expected_roadmap_items = (
         '<li><span class="timeline-number">01</span><div class="timeline-body">'
         '<h3>地道な発信を積み重ねる</h3><p>まずは、今できることを一つずつ。</p>'
-        '<p>天気、植物、園芸、メダカを毎日の暮らしや判断につなぐ記事、動画、無料ツールを地道に届けます。'
+        '<p>天気、植物、園芸、メダカを毎日の暮らしや判断につなぐ記事、動画、無料ツールを地道に届けます。<br>'
         '実際に試し、寄せられた声を受け取り、検証と改善を重ねながら、NatureWxLabの土台を育てます。</p></div></li>',
         '<li><span class="timeline-number">02</span><div class="timeline-body">'
         '<h3>信頼され、頼られるブランドを築く</h3><p>発信と実績を積み重ね、</p>'
         '<p class="roadmap-quote"><strong>「植物やメダカ、天気のことなら、まずNatureWxLabを見てみよう」</strong></p>'
         '<p>と思い出してもらえる存在を目指します。</p><p>情報を探している人、育て方に迷っている人、'
-        '天気を自然との暮らしに生かしたい人が、安心して立ち寄り、判断のよりどころにできるブランドを育てます。</p></div></li>',
+        '天気を自然との暮らしに生かしたい人が、判断のよりどころにできるブランドを育てます。</p></div></li>',
         '<li><span class="timeline-number">03</span><div class="timeline-body">'
         '<h3>発信から、リアルな出会いと体験へ</h3><p>オンラインで生まれた信頼やつながりを、画面の外へ広げます。</p>'
         '<p>自然観察会、園芸やメダカのイベント、展示、販売会、ワークショップなど、人と自然、人と人が直接出会える機会を企画します。</p>'
-        '<p>活動の輪がさらに広がった先には、植物やメダカ、自然に関する道具と実際に出会い、語り合い、体験できる店舗やリアルな交流拠点も検討します。</p></div></li>',
+        '<p>活動の輪がさらに広がった先には、植物やメダカについて語り合い、実際に体験・購入できる店舗の開業や、'
+        'リアルな交流拠点の創造も検討します。</p></div></li>',
         '<li class="timeline-goal"><span class="timeline-number">04</span><div class="timeline-body">'
         '<h3>リアルとオンラインを結ぶ、「自然の街」へ</h3><p>さらに多くの人が、住んでいる場所や生活環境にかかわらず交流できるよう、'
         '園芸、農業、植物、メダカ、天気など、<strong>「自然」への関心を共通点にしたオンライン上の街</strong>を構想しています。</p>'
@@ -1147,7 +1148,7 @@ def main() -> int:
         '大切に育てた植物やメダカを紹介し合い、適切な仕組みのもとで交換や販売もできる。</p>'
         '<p>オンライン上の街で生まれたつながりが、リアルなイベントや店舗へ広がり、リアルな体験が再びオンラインへ持ち寄られる。</p>'
         '<p>そんなふうに現実と仮想の場所が行き来しながら、自然を楽しむ人たちが自由につながり、学び合い、'
-        '今よりもっと自然を楽しめる世界を目指します。</p></div></li>',
+        '今よりもっと自然を楽しめる世界の実現を目指します。</p></div></li>',
     )
     roadmap_start = vision_text.find('<ol class="timeline vision-roadmap">')
     roadmap_end = vision_text.find("</ol>", roadmap_start)
@@ -1232,10 +1233,10 @@ def main() -> int:
             "integrated continuity section",
         ),
         (
-            r"\.continuity-layout\s*\{[^}]*\bmax-width:\s*940px\s*;[^}]*"
+            r"\.continuity-layout\s*\{[^}]*\bmax-width:\s*none\s*;[^}]*"
             r"\bborder-left:\s*4px\s+solid\s+var\(--leaf\)\s*;[^}]*"
             r"\bbackground:\s*linear-gradient\([^}]*\bgrid-template-columns:\s*1fr\s*;",
-            "timeline-aligned continuity panel",
+            "full-width timeline-aligned continuity panel",
         ),
         (
             r"\.continuity-heading\s+h2\s+span\s*\{[^}]*\bwhite-space:\s*nowrap\s*;",
