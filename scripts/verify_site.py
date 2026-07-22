@@ -38,6 +38,8 @@ REQUIRED_FILES = {
     "assets/images/hero-family-garden-medaka-v2.png",
     "assets/images/og-image.jpg",
     "assets/images/og-image.svg",
+    "assets/images/og-image-20260722-v2.jpg",
+    "assets/images/og-image-20260722-v2.svg",
     "assets/images/editorial-rose-garden-banner-20260716.jpg",
     "assets/images/editorial-medaka-pond-banner-20260716.jpg",
     "assets/images/editorial-summer-sky-banner-20260716.jpg",
@@ -242,6 +244,7 @@ def main() -> int:
         "assets/icons/social-youtube.svg": "0410b0414d8f8c5f413970592e0a11edb3e3293f0e8efdd20c7d74d16067dd8b",
         "assets/images/hero-family-garden-medaka-v2.png": "8e812c8d3e02afd15fa60fffcd65195940a1623c998e0ebc1a72842ae5462bc1",
         "assets/images/og-image.jpg": "9198c25cae29d01cdfaab1941c5095bad66627abd17003bedf6c04294e9ad35b",
+        "assets/images/og-image-20260722-v2.jpg": "001a929d21288fc35688bf449ba4dccab6033f54f77cb9cb546462aeb28928e7",
         "assets/images/editorial-rose-garden-banner-20260716.jpg": "b4faded810f7a6416a0c985324ebee3d902f0b6bb9072e9a8e8b87cf144295be",
         "assets/images/editorial-medaka-pond-banner-20260716.jpg": "b262dd031bf4c2ae230df2b7d60ccd01534817c89c98b82a89ad20e7bbedfb78",
         "assets/images/editorial-summer-sky-banner-20260716.jpg": "e8cc7c78ecbb04c621cb65c04a2106c429b2527eef355575a44a5fe337b2b27e",
@@ -265,6 +268,14 @@ def main() -> int:
             errors.append(f"{relative}: tool preview must be a JPEG file")
         if jpeg_dimensions(payload) != (1425, 891):
             errors.append(f"{relative}: tool preview dimensions must be 1425x891")
+
+    social_preview = SITE_ROOT / "assets/images/og-image-20260722-v2.jpg"
+    if social_preview.is_file():
+        social_preview_payload = social_preview.read_bytes()
+        if not social_preview_payload.startswith(b"\xff\xd8\xff"):
+            errors.append("social preview must be a JPEG file")
+        if jpeg_dimensions(social_preview_payload) != (1200, 630):
+            errors.append("social preview dimensions must be 1200x630")
 
     editorial_photos = {
         "assets/images/editorial-rose-garden-banner-20260716.jpg": (2172, 724),
@@ -576,11 +587,11 @@ def main() -> int:
     ):
         errors.append("styles.css: flexible 404 content layout is missing")
     expected_home_meta = (
-        '<title>NatureWxLab｜データと経験を、自然と暮らす知恵へ</title>',
+        '<title>NatureWxLab｜植物・メダカ・自然観察を、気象の視点で読み解く</title>',
         '<meta name="description" content="NatureWxLabは、現役気象予報士の知識と実体験をもとに、気象データを自然のある暮らしに役立つ情報、無料ツール、記事、動画へ変えて届ける小さな研究拠点です。">',
-        '<meta property="og:title" content="NatureWxLab｜データと経験を、自然と暮らす知恵へ">',
+        '<meta property="og:title" content="NatureWxLab｜植物・メダカ・自然観察を、気象の視点で読み解く">',
         '<meta property="og:description" content="NatureWxLabは、現役気象予報士の知識と実体験をもとに、気象データを自然のある暮らしに役立つ情報、無料ツール、記事、動画へ変えて届ける小さな研究拠点です。">',
-        '<meta name="twitter:title" content="NatureWxLab｜データと経験を、自然と暮らす知恵へ">',
+        '<meta name="twitter:title" content="NatureWxLab｜植物・メダカ・自然観察を、気象の視点で読み解く">',
         '<meta name="twitter:description" content="NatureWxLabは、現役気象予報士の知識と実体験をもとに、気象データを自然のある暮らしに役立つ情報、無料ツール、記事、動画へ変えて届ける小さな研究拠点です。">',
     )
     for markup in expected_home_meta:
@@ -1010,11 +1021,11 @@ def main() -> int:
         errors.append("styles.css: HOW TO CHOOSE mobile one-column layout is missing")
 
     expected_about_meta = (
-        '<title>NatureWxLabとは｜データと経験を、自然と暮らす知恵へ</title>',
+        '<title>NatureWxLabとは｜植物・メダカ・自然観察を、気象の視点で読み解く</title>',
         '<meta name="description" content="NatureWxLabは、現役気象予報士が個人で運営し、気象データと実体験、AIとの協働から、自然のある暮らしに役立つ情報、ツール、記事、動画を生み出す小さな研究拠点です。">',
-        '<meta property="og:title" content="NatureWxLabとは｜データと経験を、自然と暮らす知恵へ">',
+        '<meta property="og:title" content="NatureWxLabとは｜植物・メダカ・自然観察を、気象の視点で読み解く">',
         '<meta property="og:description" content="NatureWxLabは、現役気象予報士が個人で運営し、気象データと実体験、AIとの協働から、自然のある暮らしに役立つ情報、ツール、記事、動画を生み出す小さな研究拠点です。">',
-        '<meta name="twitter:title" content="NatureWxLabとは｜データと経験を、自然と暮らす知恵へ">',
+        '<meta name="twitter:title" content="NatureWxLabとは｜植物・メダカ・自然観察を、気象の視点で読み解く">',
         '<meta name="twitter:description" content="NatureWxLabは、現役気象予報士が個人で運営し、気象データと実体験、AIとの協働から、自然のある暮らしに役立つ情報、ツール、記事、動画を生み出す小さな研究拠点です。">',
     )
     for markup in expected_about_meta:
@@ -1526,7 +1537,7 @@ def main() -> int:
         text = (SITE_ROOT / relative).read_text(encoding="utf-8")
         if text.count(f'<link rel="canonical" href="{canonical}">') != 1:
             errors.append(f"{relative}: canonical URL is missing or duplicated")
-        if 'content="https://naturewxlab.com/assets/images/og-image.jpg"' not in text:
+        if 'content="https://naturewxlab.com/assets/images/og-image-20260722-v2.jpg"' not in text:
             errors.append(f"{relative}: social preview image is missing")
 
     manifest = json.loads((SITE_ROOT / "site.webmanifest").read_text(encoding="utf-8"))
