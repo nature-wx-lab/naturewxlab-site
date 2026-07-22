@@ -1052,9 +1052,9 @@ def main() -> int:
         '<p class="eyebrow">ABOUT NATUREWXLAB</p>',
         '<h1><span class="heading-line">一人の気象予報士から始まり、</span><span class="heading-line">知恵がつながる場所へ。</span></h1>',
         '<p>NatureWxLabは、気象情報の現場で働く現役気象予報士が、個人で運営している小さな研究拠点です。</p>',
-        '<p>気象データ、家庭での園芸やメダカ飼育、親子での自然観察、そしてAIとの協働から生まれた発見を、自然のある暮らしに役立つ形で届けています。</p>',
+        '<p>気象データ、家庭での園芸やメダカ飼育、親子での自然観察、<br>そしてAIとの協働から生まれた発見を、自然のある暮らしに役立つ形で届けています。</p>',
         '<p>今は、一人でこの場所を育てています。けれど、目指しているのは、一人の答えを発信するだけの場所ではありません。</p>',
-        '<p>地域も環境も異なる人たちの経験が行き交い、園芸、メダカ、天気、自然について互いに学び合える場所へ。NatureWxLabを、そんな研究拠点に育てていきます。</p>',
+        '<p>地域も環境も異なる人たちの経験が行き交い、園芸、メダカ、天気、自然について互いに学び合える場所へ。<br>NatureWxLabを、そんな研究拠点に育てていきます。</p>',
         '<p class="eyebrow">ORIGIN</p>',
         '<h2 id="about-origin-title" class="about-one-line-title"><span class="about-title-mobile-line">空を読む仕事と、自然を</span><span class="about-title-mobile-line">育てる暮らしの間から。</span></h2>',
         '<p class="eyebrow">THE LAB CYCLE</p>',
@@ -1330,8 +1330,8 @@ def main() -> int:
     )
     if about_intro is None:
         errors.append("about/index.html: About introduction is missing")
-    elif re.search(r"<br\s*/?>", about_intro.group(1), re.IGNORECASE):
-        errors.append("about/index.html: About introduction must wrap naturally without br")
+    elif len(re.findall(r"<br\s*/?>", about_intro.group(1), re.IGNORECASE)) != 2:
+        errors.append("about/index.html: About introduction must contain the two approved line breaks")
 
     expected_origin_closing = (
         '<p class="about-origin-closing">ならば、気象データと実体験の両方を使って考えられる場所を作ろう。'
