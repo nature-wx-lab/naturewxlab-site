@@ -5,10 +5,15 @@
   Referrer-Policy: strict-origin-when-cross-origin
   Permissions-Policy: accelerometer=(), autoplay=(), camera=(), display-capture=(), encrypted-media=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=()
   Cross-Origin-Opener-Policy: same-origin
-  Cross-Origin-Resource-Policy: same-origin
   Cache-Control: public, max-age=0, must-revalidate
 
 /assets/*
+  Cross-Origin-Resource-Policy: same-origin
+  Cache-Control: public, max-age=0, must-revalidate
+
+/share/*
+  Access-Control-Allow-Origin: *
+  Cross-Origin-Resource-Policy: cross-origin
   Cache-Control: public, max-age=0, must-revalidate
 
 https://naturewxlab-site.pages.dev/*

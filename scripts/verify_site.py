@@ -52,6 +52,7 @@ REQUIRED_FILES = {
     "assets/images/tool-preview-temperature-risk-20260716.jpg",
     "assets/images/tool-preview-water-care-20260716.jpg",
     "assets/images/tool-preview-weather-distribution-20260716.jpg",
+    "share/naturewxlab-card-20260723.jpg",
     "robots.txt",
     "sitemap.xml",
     "site.webmanifest",
@@ -286,6 +287,7 @@ def main() -> int:
         "assets/images/tool-preview-temperature-risk-20260716.jpg": "3fb8f2c87de0ecb4e78b47fb27a88926d0b7f98104a46901c287a3642646e1bf",
         "assets/images/tool-preview-water-care-20260716.jpg": "db56f994547e8745fdfb05f55312698c995f4652b86f7369b4fa64365b28c7b2",
         "assets/images/tool-preview-weather-distribution-20260716.jpg": "49419fb547f5433be519e07343d3b362f474b9907187f7cf33aa37ab98190a04",
+        "share/naturewxlab-card-20260723.jpg": "41019369c9ea4dc1e69ec58bed943f2e652cc533b03c85ec5a344b3af60a7aed",
     }
     for relative, expected_sha256 in expected_asset_sha256.items():
         asset = SITE_ROOT / relative
@@ -303,7 +305,7 @@ def main() -> int:
         if jpeg_dimensions(payload) != (1425, 891):
             errors.append(f"{relative}: tool preview dimensions must be 1425x891")
 
-    social_preview = SITE_ROOT / "assets/images/og-image-20260722-v4.jpg"
+    social_preview = SITE_ROOT / "share/naturewxlab-card-20260723.jpg"
     if social_preview.is_file():
         social_preview_payload = social_preview.read_bytes()
         if not social_preview_payload.startswith(b"\xff\xd8\xff"):
@@ -657,10 +659,10 @@ def main() -> int:
     expected_home_meta = (
         '<title>NatureWxLab｜植物・メダカ・自然観察を、気象の視点で読み解く</title>',
         '<meta name="description" content="NatureWxLabは、現役気象予報士の知識と実体験をもとに、気象データを自然のある暮らしに役立つ情報、無料ツール、記事、動画へ変えて届ける小さな研究拠点です。">',
-        '<meta property="og:title" content="NatureWxLab｜植物・メダカ・自然観察を、気象の視点で読み解く">',
-        '<meta property="og:description" content="NatureWxLabは、現役気象予報士の知識と実体験をもとに、気象データを自然のある暮らしに役立つ情報、無料ツール、記事、動画へ変えて届ける小さな研究拠点です。">',
-        '<meta name="twitter:title" content="NatureWxLab｜植物・メダカ・自然観察を、気象の視点で読み解く">',
-        '<meta name="twitter:description" content="NatureWxLabは、現役気象予報士の知識と実体験をもとに、気象データを自然のある暮らしに役立つ情報、無料ツール、記事、動画へ変えて届ける小さな研究拠点です。">',
+        '<meta property="og:title" content="NatureWxLab｜天気を味方に、自然と暮らす">',
+        '<meta property="og:description" content="植物・メダカ・自然観察を、気象の視点で読み解く">',
+        '<meta name="twitter:title" content="NatureWxLab｜天気を味方に、自然と暮らす">',
+        '<meta name="twitter:description" content="植物・メダカ・自然観察を、気象の視点で読み解く">',
     )
     for markup in expected_home_meta:
         if home_text.count(markup) != 1:
@@ -1642,8 +1644,26 @@ def main() -> int:
         text = (SITE_ROOT / relative).read_text(encoding="utf-8")
         if text.count(f'<link rel="canonical" href="{canonical}">') != 1:
             errors.append(f"{relative}: canonical URL is missing or duplicated")
-        if 'content="https://naturewxlab.com/assets/images/og-image-20260722-v4.jpg"' not in text:
-            errors.append(f"{relative}: social preview image is missing")
+        social_image_url = "https://naturewxlab.com/share/naturewxlab-card-20260723.jpg"
+        expected_social_meta = (
+            f'<meta property="og:image" content="{social_image_url}">',
+            f'<meta property="og:image:secure_url" content="{social_image_url}">',
+            '<meta property="og:image:type" content="image/jpeg">',
+            '<meta property="og:image:width" content="1200">',
+            '<meta property="og:image:height" content="630">',
+            '<meta property="og:image:alt" content="NatureWxLab 天気を味方に、自然と暮らす">',
+            '<meta name="note:card" content="summary_large_image">',
+            '<meta name="twitter:card" content="summary_large_image">',
+            '<meta name="twitter:site" content="@nature_wx_lab">',
+            '<meta name="twitter:creator" content="@nature_wx_lab">',
+            f'<meta name="twitter:image" content="{social_image_url}">',
+            '<meta name="twitter:image:alt" content="NatureWxLab 天気を味方に、自然と暮らす">',
+        )
+        for markup in expected_social_meta:
+            if text.count(markup) != 1:
+                errors.append(f"{relative}: social metadata is missing or duplicated: {markup}")
+        if "assets/images/og-image-20260722-v4.jpg" in text:
+            errors.append(f"{relative}: obsolete social preview URL remains")
 
     manifest = json.loads((SITE_ROOT / "site.webmanifest").read_text(encoding="utf-8"))
     if manifest.get("name") != "NatureWxLab" or manifest.get("display") != "browser":
@@ -1745,6 +1765,19 @@ def main() -> int:
     ):
         if directive not in headers:
             errors.append(f"_headers: missing security directive: {directive}")
+    if not re.search(
+        r"/assets/\*\s+Cross-Origin-Resource-Policy:\s*same-origin\s+"
+        r"Cache-Control:\s*public,\s*max-age=0,\s*must-revalidate",
+        headers,
+    ):
+        errors.append("_headers: same-origin protection for ordinary assets is missing")
+    if not re.search(
+        r"/share/\*\s+Access-Control-Allow-Origin:\s*\*\s+"
+        r"Cross-Origin-Resource-Policy:\s*cross-origin\s+"
+        r"Cache-Control:\s*public,\s*max-age=0,\s*must-revalidate",
+        headers,
+    ):
+        errors.append("_headers: cross-origin sharing contract for social cards is missing")
 
     if errors:
         print("SITE VERIFICATION FAILED")
