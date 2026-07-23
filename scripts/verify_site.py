@@ -534,6 +534,17 @@ def main() -> int:
     vision_text = (SITE_ROOT / "vision/index.html").read_text(encoding="utf-8")
     policy_text = (SITE_ROOT / "policy/index.html").read_text(encoding="utf-8")
     styles_text = (SITE_ROOT / "assets/css/styles.css").read_text(encoding="utf-8")
+    navigation_text = (SITE_ROOT / "assets/js/navigation.js").read_text(encoding="utf-8")
+    expected_note_url_normalization = (
+        'if (window.location.pathname !== "/")',
+        'url.searchParams.get("note-card") !== "20260723"',
+        'url.searchParams.delete("note-card");',
+        "window.history.replaceState(",
+        "url.pathname + url.search + url.hash",
+    )
+    for contract in expected_note_url_normalization:
+        if navigation_text.count(contract) != 1:
+            errors.append(f"navigation.js: note card canonical URL contract is missing or duplicated: {contract}")
     expected_editorial_photos = (
         (
             "index.html",

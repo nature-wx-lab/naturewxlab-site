@@ -53,6 +53,8 @@ SNS共有カードは、トップページの共有タイトルを「NatureWxLab
 
 Open GraphをLINE、Facebook、LinkedIn、Slack、Discord、Bluesky、Mastodonなどの共通土台とし、`og:image:secure_url`、画像形式、1200×630の寸法、altを明示します。X向けには `summary_large_image`、公式アカウント、タイトル、説明、画像、altを指定し、note向けには `note:card=summary_large_image` を追加します。`share/` だけは `Cross-Origin-Resource-Policy: cross-origin` とCORSを許可し、外部サイトがカード画像を直接表示できるようにします。通常の `assets/` は `same-origin` を維持します。各媒体固有のアプリIDや管理者IDなど、保有していない値・不要な値は推測して追加しません。
 
+noteが正規URLの古いカード情報を再利用する場合だけ、再取得用URL `https://naturewxlab.com/?note-card=20260723` を使います。クローラーにはquery付きURLのまま新しいOpen Graph／note Cardを返し、実ブラウザでは `navigation.js` が該当する1パラメータだけを `history.replaceState` で除去します。ページを再読込・転送せず、他のqueryとfragmentを保持するため、アドレスバーとお気に入りは正規URLへ戻り、カードの再取得キーは維持されます。
+
 公開用JPEGは、各元画像の構図と縦横比を切り抜かず保ったまま最適化します。画像枠は `width: 100%; max-width: var(--content)` とし、各ページの `.section-inner` と同じ基準線へ揃えます。寸法・形式・SHA-256・許可する最小限の画像メタデータを検査スクリプトで固定します。Toolsは既存の初期画面画像を優先し、Policyは可読性と説明責任を優先して装飾写真を追加しません。
 
 ### Xカード画像を更新する時

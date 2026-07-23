@@ -3,6 +3,25 @@
 
   document.documentElement.classList.add("nav-js");
 
+  function normalizeNoteCardUrl() {
+    if (window.location.pathname !== "/") {
+      return;
+    }
+
+    var url = new URL(window.location.href);
+
+    if (url.searchParams.get("note-card") !== "20260723") {
+      return;
+    }
+
+    url.searchParams.delete("note-card");
+    window.history.replaceState(
+      window.history.state,
+      "",
+      url.pathname + url.search + url.hash
+    );
+  }
+
   function initializeNavigation() {
     var toggle = document.querySelector("[data-nav-toggle]");
     var nav = document.querySelector("[data-global-nav]");
@@ -62,6 +81,8 @@
       desktopQuery.addListener(handleDesktopChange);
     }
   }
+
+  normalizeNoteCardUrl();
 
   if (document.readyState === "loading") {
     document.addEventListener("DOMContentLoaded", initializeNavigation);
