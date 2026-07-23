@@ -498,7 +498,7 @@ def main() -> int:
     expected_brand_icon = '<img src="/assets/icons/naturewxlab-icon.png" width="54" height="54" alt="" aria-hidden="true">'
     expected_favicon = '<link rel="icon" href="/assets/icons/naturewxlab-icon.png" type="image/png">'
     expected_apple_touch = '<link rel="apple-touch-icon" href="/assets/icons/naturewxlab-icon.png">'
-    expected_stylesheet = '<link rel="stylesheet" href="/assets/css/styles.css?v=20260723-1">'
+    expected_stylesheet = '<link rel="stylesheet" href="/assets/css/styles.css?v=20260724-1">'
     for relative in HTML_FILES:
         text = relative.read_text(encoding="utf-8")
         page = relative.relative_to(SITE_ROOT)
@@ -1498,7 +1498,7 @@ def main() -> int:
     expected_social_icons = {
         "note": '<span class="service-mark note" aria-hidden="true"><img src="/assets/icons/social-note.svg" width="42" height="42" alt=""></span>',
         "X": '<span class="service-mark x" aria-hidden="true"><img src="/assets/icons/social-x.svg" width="24" height="24" alt=""></span>',
-        "Instagram": '<span class="service-mark instagram" aria-hidden="true"><img src="/assets/icons/social-instagram.svg" width="24" height="24" alt=""></span>',
+        "Instagram": '<span class="service-mark instagram" aria-hidden="true"><img src="/assets/icons/social-instagram.svg" width="28" height="28" alt=""></span>',
         "YouTube": '<span class="service-mark youtube" aria-hidden="true"><img src="/assets/icons/social-youtube.svg" width="24" height="24" alt=""></span>',
     }
     for service, markup in expected_social_icons.items():
@@ -1591,6 +1591,28 @@ def main() -> int:
         re.DOTALL,
     ):
         errors.append("styles.css: note icon rounded frame styling is missing")
+    instagram_frame = re.search(
+        r"\.service-mark\.instagram\s*\{([^}]*)\}",
+        styles_text,
+        re.DOTALL,
+    )
+    instagram_frame_tokens = (
+        "overflow: hidden;",
+        "radial-gradient(circle at 30% 107%, #feda75 0 16%, #fa7e1e 32%, transparent 56%)",
+        "radial-gradient(circle at 100% 0, #962fbf 0 20%, transparent 54%)",
+        "linear-gradient(135deg, #c62d8f 0%, #e1306c 48%, #fd5949 70%, #feda75 100%)",
+    )
+    if instagram_frame is None or any(
+        token not in instagram_frame.group(1) for token in instagram_frame_tokens
+    ):
+        errors.append("styles.css: Instagram pink-orange-purple gradient frame is missing")
+    if not re.search(
+        r"\.service-mark\.instagram\s+img\s*\{[^}]*\bwidth:\s*28px\s*;"
+        r"[^}]*\bheight:\s*28px\s*;[^}]*\bfilter:\s*brightness\(0\)\s+invert\(1\)\s*;",
+        styles_text,
+        re.DOTALL,
+    ):
+        errors.append("styles.css: Instagram white glyph presentation is missing")
     if not re.search(
         r"@media\s*\(max-width:\s*1099px\)\s*\{\s*\.media-grid\s*\{[^}]*"
         r"grid-template-columns:\s*repeat\(2,\s*minmax\(0,\s*1fr\)\)\s*;",

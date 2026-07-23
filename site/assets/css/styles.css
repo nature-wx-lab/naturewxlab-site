@@ -892,9 +892,19 @@ main {
 }
 
 .service-mark.instagram {
-  border-color: #e3c6da;
-  background: #fff;
-  color: #9b356f;
+  overflow: hidden;
+  border-color: rgb(255 255 255 / 55%);
+  background:
+    radial-gradient(circle at 30% 107%, #feda75 0 16%, #fa7e1e 32%, transparent 56%),
+    radial-gradient(circle at 100% 0, #962fbf 0 20%, transparent 54%),
+    linear-gradient(135deg, #c62d8f 0%, #e1306c 48%, #fd5949 70%, #feda75 100%);
+  box-shadow: 0 4px 12px rgb(214 41 118 / 18%);
+}
+
+.service-mark.instagram img {
+  width: 28px;
+  height: 28px;
+  filter: brightness(0) invert(1);
 }
 
 .service-mark.mercari {
