@@ -1279,6 +1279,19 @@ main {
   background: linear-gradient(135deg, #ffffff, #edf7f2);
 }
 
+.vision-roadmap-illustration {
+  margin: 34px 0 0 20px;
+}
+
+.vision-roadmap-illustration img {
+  display: block;
+  width: 100%;
+  height: auto;
+  border: 1px solid rgba(36, 114, 93, 0.26);
+  border-radius: var(--radius);
+  background: var(--paper);
+}
+
 .continuity-section {
   padding-block: 0 72px;
   background: var(--mist);
@@ -1641,6 +1654,10 @@ main {
     gap: 16px;
   }
 
+  .vision-roadmap-illustration {
+    margin-left: 0;
+  }
+
   .vision-now-layout .content-block {
     margin-top: 0;
   }
@@ -1858,6 +1875,10 @@ main {
 
   .vision-roadmap .timeline-goal .timeline-body {
     padding: 18px;
+  }
+
+  .vision-roadmap-illustration {
+    margin-top: 26px;
   }
 
   .continuity-section {

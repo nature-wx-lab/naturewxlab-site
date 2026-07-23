@@ -9,6 +9,7 @@ import os
 import re
 import sys
 import xml.etree.ElementTree as ET
+import zlib
 from html.parser import HTMLParser
 from pathlib import Path
 from urllib.parse import urlsplit
@@ -46,6 +47,7 @@ REQUIRED_FILES = {
     "assets/images/editorial-rose-garden-banner-20260716.jpg",
     "assets/images/editorial-medaka-pond-banner-20260716.jpg",
     "assets/images/editorial-summer-sky-banner-20260716.jpg",
+    "assets/images/vision-future-roadmap-20260723.png",
     "assets/images/tool-preview-climate-outlook-20260716.jpg",
     "assets/images/tool-preview-temperature-risk-20260716.jpg",
     "assets/images/tool-preview-water-care-20260716.jpg",
@@ -195,6 +197,32 @@ def jpeg_dimensions(payload: bytes) -> tuple[int, int] | None:
     return None
 
 
+def png_chunks(payload: bytes) -> list[tuple[bytes, bytes]] | None:
+    """Return validated PNG chunks without adding an image-library dependency."""
+    if not payload.startswith(b"\x89PNG\r\n\x1a\n"):
+        return None
+    offset = 8
+    chunks: list[tuple[bytes, bytes]] = []
+    while offset + 12 <= len(payload):
+        length = int.from_bytes(payload[offset : offset + 4], "big")
+        chunk_type = payload[offset + 4 : offset + 8]
+        data_start = offset + 8
+        data_end = data_start + length
+        crc_end = data_end + 4
+        if crc_end > len(payload):
+            return None
+        chunk_data = payload[data_start:data_end]
+        expected_crc = int.from_bytes(payload[data_end:crc_end], "big")
+        actual_crc = zlib.crc32(chunk_type + chunk_data) & 0xFFFFFFFF
+        if actual_crc != expected_crc:
+            return None
+        chunks.append((chunk_type, chunk_data))
+        offset = crc_end
+        if chunk_type == b"IEND":
+            return chunks if offset == len(payload) else None
+    return None
+
+
 def jpeg_app_segments(payload: bytes) -> list[tuple[int, bytes]] | None:
     """Return JPEG APP/comment segments before image data for metadata checks."""
     if not payload.startswith(b"\xff\xd8"):
@@ -253,6 +281,7 @@ def main() -> int:
         "assets/images/editorial-rose-garden-banner-20260716.jpg": "b4faded810f7a6416a0c985324ebee3d902f0b6bb9072e9a8e8b87cf144295be",
         "assets/images/editorial-medaka-pond-banner-20260716.jpg": "b262dd031bf4c2ae230df2b7d60ccd01534817c89c98b82a89ad20e7bbedfb78",
         "assets/images/editorial-summer-sky-banner-20260716.jpg": "e8cc7c78ecbb04c621cb65c04a2106c429b2527eef355575a44a5fe337b2b27e",
+        "assets/images/vision-future-roadmap-20260723.png": "0139678842021a29db5c3e99d08f8d0d98fc5606c82ba4f2bf0a3190d77804ff",
         "assets/images/tool-preview-climate-outlook-20260716.jpg": "036e25c730b6864b6b1d963e28ffa90b05fc83f981d0be0921ab999a3b745b6f",
         "assets/images/tool-preview-temperature-risk-20260716.jpg": "3fb8f2c87de0ecb4e78b47fb27a88926d0b7f98104a46901c287a3642646e1bf",
         "assets/images/tool-preview-water-care-20260716.jpg": "db56f994547e8745fdfb05f55312698c995f4652b86f7369b4fa64365b28c7b2",
@@ -329,6 +358,28 @@ def main() -> int:
             if marker in metadata:
                 errors.append(f"{relative}: editorial photo contains disallowed metadata")
                 break
+
+    roadmap_illustration = SITE_ROOT / "assets/images/vision-future-roadmap-20260723.png"
+    if roadmap_illustration.is_file():
+        roadmap_payload = roadmap_illustration.read_bytes()
+        chunks = png_chunks(roadmap_payload)
+        if chunks is None:
+            errors.append("Vision roadmap illustration is not a valid PNG")
+        else:
+            chunk_types = [chunk_type for chunk_type, _ in chunks]
+            if chunk_types[0] != b"IHDR" or chunk_types[-1] != b"IEND" or chunk_types.count(b"IHDR") != 1:
+                errors.append("Vision roadmap illustration has an invalid PNG structure")
+            ihdr = chunks[0][1]
+            if (
+                len(ihdr) != 13
+                or int.from_bytes(ihdr[0:4], "big") != 1672
+                or int.from_bytes(ihdr[4:8], "big") != 941
+                or ihdr[8] != 8
+                or ihdr[9] != 2
+            ):
+                errors.append("Vision roadmap illustration dimensions or RGB format changed")
+            if any(chunk_type in {b"tEXt", b"zTXt", b"iTXt", b"eXIf"} for chunk_type in chunk_types):
+                errors.append("Vision roadmap illustration contains disallowed metadata")
 
     safe_svg_files = (
         "assets/icons/service-auction.svg",
@@ -445,7 +496,7 @@ def main() -> int:
     expected_brand_icon = '<img src="/assets/icons/naturewxlab-icon.png" width="54" height="54" alt="" aria-hidden="true">'
     expected_favicon = '<link rel="icon" href="/assets/icons/naturewxlab-icon.png" type="image/png">'
     expected_apple_touch = '<link rel="apple-touch-icon" href="/assets/icons/naturewxlab-icon.png">'
-    expected_stylesheet = '<link rel="stylesheet" href="/assets/css/styles.css?v=20260722-3">'
+    expected_stylesheet = '<link rel="stylesheet" href="/assets/css/styles.css?v=20260723-1">'
     for relative in HTML_FILES:
         text = relative.read_text(encoding="utf-8")
         page = relative.relative_to(SITE_ROOT)
@@ -1205,13 +1256,29 @@ def main() -> int:
             errors.append("vision/index.html: Vision roadmap stage copy or ordering changed")
 
     continuity_markup = '<section class="section continuity-section" aria-labelledby="continuity-title">'
+    roadmap_illustration_markup = (
+        '<figure class="vision-roadmap-illustration">\n'
+        '          <img src="/assets/images/vision-future-roadmap-20260723.png" width="1672" height="941" '
+        'alt="NatureWxLabが地道な発信からリアルとオンラインを結ぶ「自然の街」へ進む01〜04の将来構想を山道で表したイラスト" '
+        'loading="lazy" decoding="async">\n'
+        "        </figure>"
+    )
+    if vision_text.count(roadmap_illustration_markup) != 1:
+        errors.append("vision/index.html: approved roadmap illustration is missing or duplicated")
+    illustration_start = vision_text.find(roadmap_illustration_markup)
+    illustration_end = vision_text.find("</figure>", illustration_start)
     continuity_start = vision_text.find(continuity_markup)
     continuity_end = vision_text.find("</section>", continuity_start)
     promise_start = vision_text.find(
         '<section class="section white" aria-labelledby="promise-title">'
     )
-    if not (roadmap_end >= 0 and roadmap_end < continuity_start < continuity_end < promise_start):
-        errors.append("vision/index.html: CONTINUITY must remain independent between FUTURE and PROMISE")
+    if not (
+        roadmap_end >= 0
+        and roadmap_end < illustration_start < illustration_end < continuity_start < continuity_end < promise_start
+    ):
+        errors.append(
+            "vision/index.html: roadmap illustration must remain between stage 04 and independent CONTINUITY"
+        )
     elif any(
         marker in vision_text[continuity_start:continuity_end]
         for marker in ("<ol", "timeline-number", 'class="timeline', ">05<")
@@ -1260,6 +1327,17 @@ def main() -> int:
             "restrained final-stage emphasis",
         ),
         (
+            r"\.vision-roadmap-illustration\s*\{[^}]*\bmargin:\s*34px\s+0\s+0\s+20px\s*;",
+            "timeline-aligned Vision roadmap illustration",
+        ),
+        (
+            r"\.vision-roadmap-illustration\s+img\s*\{[^}]*\bdisplay:\s*block\s*;[^}]*"
+            r"\bwidth:\s*100%\s*;[^}]*\bheight:\s*auto\s*;[^}]*"
+            r"\bborder:\s*1px\s+solid\s+rgba\(36,\s*114,\s*93,\s*0\.26\)\s*;[^}]*"
+            r"\bborder-radius:\s*var\(--radius\)\s*;",
+            "uncropped responsive Vision roadmap illustration",
+        ),
+        (
             r"\.continuity-section\s*\{[^}]*\bpadding-block:\s*0\s+72px\s*;[^}]*"
             r"\bbackground:\s*var\(--mist\)\s*;",
             "integrated continuity section",
@@ -1298,11 +1376,21 @@ def main() -> int:
             "mobile NOW title wrap reset",
         ),
         (
+            r"@media\s*\(max-width:\s*880px\)(?:(?!@media).)*"
+            r"\.vision-roadmap-illustration\s*\{[^}]*\bmargin-left:\s*0\s*;",
+            "mobile Vision roadmap illustration alignment",
+        ),
+        (
             r"@media\s*\(max-width:\s*560px\)(?:(?!@media).)*"
             r"\.vision-roadmap\s+li\s*\{[^}]*\bpadding:\s*0\s+0\s+32px\s+46px\s*;"
             r"(?:(?!@media).)*\.vision-roadmap\s+\.timeline-number\s*\{[^}]*"
             r"\bleft:\s*-18px\s*;",
             "mobile roadmap width",
+        ),
+        (
+            r"@media\s*\(max-width:\s*560px\)(?:(?!@media).)*"
+            r"\.vision-roadmap-illustration\s*\{[^}]*\bmargin-top:\s*26px\s*;",
+            "compact mobile Vision roadmap illustration spacing",
         ),
     )
     for pattern, label in vision_css_contracts:
