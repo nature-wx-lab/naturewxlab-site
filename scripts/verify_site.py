@@ -115,7 +115,7 @@ class PageParser(HTMLParser):
                 self.errors.append(f"javascript URL in {name}")
         if tag == "a" and attributes.get("href"):
             self.links.append(attributes["href"])
-        if tag == "script" and attributes.get("src") == "/assets/js/navigation.js":
+        if tag == "script" and attributes.get("src") == "/assets/js/navigation.js?v=20260723-2":
             self.has_navigation_script = True
         if tag == "script" and attributes.get("src") == "/assets/js/analytics-config.js":
             self.has_analytics_config = True
